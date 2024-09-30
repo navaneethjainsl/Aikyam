@@ -1,0 +1,19 @@
+{
+  "name": "aikyam",
+  "version": "1.0.0",
+  "description": "Assistive web page that supports specially abled individuals",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/navaneethjainsl/Aikyam.git"
+  },
+  "author": "Navaneeth, Chinmayi, Amrutha, Chaithra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/navaneethjainsl/Aikyam/issues"
+  },
+  "homepage": "https://github.com/navaneethjainsl/Aikyam#readme"
+}
