@@ -15,5 +15,25 @@
   "bugs": {
     "url": "https://github.com/navaneethjainsl/Aikyam/issues"
   },
-  "homepage": "https://github.com/navaneethjainsl/Aikyam#readme"
+  "homepage": "https://github.com/navaneethjainsl/Aikyam#readme",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bcrypt-nodejs": "^0.0.3",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-fileupload": "^1.5.1",
+    "express-session": "^1.18.0",
+    "lodash": "^4.17.21",
+    "mongodb": "^6.9.0",
+    "mongoose": "^8.7.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^8.0.0",
+    "pdfreader": "^3.0.5"
+  }
 }

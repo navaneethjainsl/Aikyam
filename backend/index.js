@@ -1,3 +1,4 @@
+import express from 'express';
 import fileUpload from 'express-fileupload';
 
 import mongodb from 'mongodb';
@@ -27,10 +28,10 @@ import cors from "cors";
 
 import { PdfReader } from "pdfreader";
 
-import {authenticate} from '@google-cloud/local-auth';
-import {google} from 'googleapis';
+// import {authenticate} from '@google-cloud/local-auth';
+// import {google} from 'googleapis';
 
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 // dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -77,6 +78,30 @@ app.use(passport.session());
 
 ////////////////////////////////////////////////////NJ////////////////////////////////////////////////////
 
+// Logging middleware for debugging purposes
+app.use((req, res, next) => {
+    console.log(`Received ${req.method} request for '${req.url}' - Body: ${JSON.stringify(req.body)}`);
+    next();
+});
+
+// Endpoint to handle wake word detection
+// app.post('/api/wake-word', (req, res) => {
+//     const { transcript } = req.body;
+
+//     if (transcript && transcript.toLowerCase().includes('jarvis')) {
+//         console.log('Wake word "Jarvis" detected');
+//         // Perform your action here (e.g., trigger an event, send a notification, etc.)
+//         res.status(200).json({ message: 'Wake word detected', action: 'Performing action...' });
+//     } else {
+//         res.status(400).json({ message: 'Wake word not detected' });
+//     }
+// });
+
+app.post('/voice/command', (req, res) => {
+    const query = req.body.query
+
+    console.log(query);
+});
 
 
 ////////////////////////////////////////////////////Chinmayi////////////////////////////////////////////////////
