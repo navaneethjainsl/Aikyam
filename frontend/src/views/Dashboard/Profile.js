@@ -31,8 +31,10 @@ import {
 	Image,
 	Link,
 	Switch,
-	Text
+	Text,
+	
 } from '@chakra-ui/react';
+import { ArrowUpIcon } from '@chakra-ui/icons';
 import avatar11 from 'assets/img/avatars/avatar11.png';
 // Images
 import avatar2 from 'assets/img/avatars/avatar2.png';
@@ -237,7 +239,7 @@ function Profile() {
 									variant='vision'>
 									<CircularProgressLabel>
 										<Flex direction='column' justify='center' align='center'>
-											<LightningIcon w='14px' h='22px' mb='8px' />
+											<ArrowUpIcon w='14px' h='22px' mb='8px' />
 											<Text color='#fff' fontSize='36px' fontWeight='bold' mb='6px'>
 												68%
 											</Text>
