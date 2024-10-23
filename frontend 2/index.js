@@ -120,7 +120,7 @@ if (!('webkitSpeechRecognition' in window)) {
         console.log("Final Query (Frontend):")
         console.log(query)
 
-        fetch('http://localhost:3000/voice/command', {
+        fetch('http://localhost:5000/api/user/voice/assistant', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

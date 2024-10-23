@@ -1,27 +1,29 @@
 import express from 'express';
 import fileUpload from 'express-fileupload';
 
-import mongodb from 'mongodb';
-import {MongoClient} from "mongodb";
-import mongoose  from "mongoose";
+// import mongodb from 'mongodb';
+// import {MongoClient} from "mongodb";
+// import mongoose  from "mongoose";
 
-import ejs from "ejs";
+import connectToMongo from "./db.js"
+connectToMongo()
+
+// import ejs from "ejs";
 import lodash from "lodash";
 import bodyParser from "body-parser";
 import dotenv from 'dotenv/config';
 import fs from 'fs';
 
-import path from 'path';
+// import path from 'path';
 import process from 'process';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-import session from "express-session";
-import passport from "passport";
-import passportLocalMongoose from "passport-local-mongoose";
-import {Strategy} from 'passport-local';
-import bcrypt from 'bcrypt-nodejs';
-import cookieParser from 'cookie-parser';
+// import session from "express-session";
+// import passport from "passport";
+// import passportLocalMongoose from "passport-local-mongoose";
+// import {Strategy} from 'passport-local';
+// import cookieParser from 'cookie-parser';
 
 import axios from "axios";
 import cors from "cors";
@@ -31,19 +33,21 @@ import { PdfReader } from "pdfreader";
 // import {authenticate} from '@google-cloud/local-auth';
 // import {google} from 'googleapis';
 
-const PORT = process.env.PORT || 3000;
 
 // dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(fileUpload());
+
 app.use(express.json());
+
 app.use(cors({
     origin: 'http://localhost:5173', // allow to server to accept request from different origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -76,6 +80,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+import auth from "./routes/auth.js";
+import user from "./routes/user.js";
+app.use('/api/auth', auth);
+app.use('/api/user', user);
+
 ////////////////////////////////////////////////////NJ////////////////////////////////////////////////////
 
 // Logging middleware for debugging purposes
@@ -97,11 +106,6 @@ app.use((req, res, next) => {
 //     }
 // });
 
-app.post('/voice/command', (req, res) => {
-    const query = req.body.query
-
-    console.log(query);
-});
 
 
 ////////////////////////////////////////////////////Chinmayi////////////////////////////////////////////////////
@@ -117,6 +121,7 @@ app.post('/voice/command', (req, res) => {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
