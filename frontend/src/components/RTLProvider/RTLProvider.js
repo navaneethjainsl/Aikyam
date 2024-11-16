@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-
+/*
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import rtl from "stylis-plugin-rtl";
@@ -29,3 +29,4 @@ export function RtlProvider({ children }) {
   const cache = createCache(options[dir]);
   return <CacheProvider value={cache} children={children} />;
 }
+*/
