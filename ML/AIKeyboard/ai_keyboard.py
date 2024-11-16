@@ -65,9 +65,10 @@ while True:
 
     if not success:
         break
-
+    img = cv2.flip(img, 1)
     # Find hands and landmarks
-    hands, img = detector.findHands(img)  # Detect hands and draw landmarks on the image
+    hands, img = detector.findHands(img, flipType=False)  # Detect hands and draw landmarks on the image
+    
     img= drawAll(img, buttonList)
 
     if hands and len(hands[0]['lmList']) > 8:
