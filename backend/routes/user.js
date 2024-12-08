@@ -12,7 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 
 // Jarvis Assistant: POST 'http://localhost:5000/api/user/voice/assistant'
-app.post('/voice/assistant', (req, res) => {
+router.post('/voice/assistant', (req, res) => {
     const query = req.body.query
 
     console.log(query);

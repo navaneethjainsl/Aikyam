@@ -19,11 +19,11 @@ import process from 'process';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-// import session from "express-session";
-// import passport from "passport";
-// import passportLocalMongoose from "passport-local-mongoose";
-// import {Strategy} from 'passport-local';
-// import cookieParser from 'cookie-parser';
+import session from "express-session";
+import passport from "passport";
+import passportLocalMongoose from "passport-local-mongoose";
+import {Strategy} from 'passport-local';
+import cookieParser from 'cookie-parser';
 
 import axios from "axios";
 import cors from "cors";
