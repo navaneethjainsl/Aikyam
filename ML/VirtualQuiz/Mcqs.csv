@@ -1,5 +1,51 @@
 Question,Choice1,Choice2,Choice3,Choice4,Answer
-What is the height in an HD Image?,480,720,1080,240,2
-How many corners does a hexagon have?,Three,Four,Five,Six,4
-What is the variable type of a? a = 'yes',Integer,Float,String,Character,3
-How many oceans are in the world?,Two ,Three,Four,Five,4
+What is the capital of France?,Berlin,London,Paris,Rome,3
+How many legs does a spider have?,Six,Seven,Eight,Ten,3
+What is 5 + 3?,6,7,8,9,3
+Which planet is known as the Red Planet?,Earth,Venus,Mars,Jupiter,3
+What is the boiling point of water in Celsius?,90,100,110,120,2
+Who wrote "Romeo and Juliet"?,Charles Dickens,William Shakespeare,Mark Twain,J.K. Rowling,2
+What is the atomic number of Hydrogen?,1,2,3,4,1
+How many sides does a pentagon have?,Four,Five,Six,Seven,2
+What is the largest mammal?,Elephant,Blue Whale,Great White Shark,Giraffe,2
+Which programming language is known as the "mother of all languages"?,Python,C,C++,Assembly,4
+What is the smallest prime number?,1,2,3,5,2
+What is the square root of 81?,7,8,9,10,3
+Which element has the chemical symbol 'O'?,Oxygen,Gold,Iron,Silver,1
+How many continents are there?,Five,Six,Seven,Four,3
+What does HTTP stand for?,Hypertext Transfer Program,Hypertext Transmission Protocol,Hypertext Transfer Protocol,Hyperlink Transfer Protocol,3
+What is the national bird of the United States?,Peacock,Eagle,Sparrow,Robin,2
+What is the hardest natural substance on Earth?,Gold,Diamond,Graphite,Steel,2
+What is the capital of Japan?,Shanghai,Seoul,Tokyo,Beijing,3
+How many strings does a standard guitar have?,Four,Six,Seven,Eight,2
+What is the currency of the United Kingdom?,Euro,Dollar,Pound,Yen,3
+Which planet is closest to the Sun?,Earth,Mercury,Venus,Mars,2
+What is the freezing point of water in Celsius?,0,10,-10,-20,1
+Which is the largest desert in the world?,Sahara,Arctic,Gobi,Antarctica,4
+How many bones are in the human body?,206,208,210,212,1
+What is the speed of light in vacuum (km/s)?,300,000,150,000,500,000,250,000,1
+Which gas do plants use for photosynthesis?,Oxygen,Carbon Dioxide,Nitrogen,Hydrogen,2
+Which programming language is used for web development?,Python,JavaScript,C++,Assembly,2
+What is the smallest unit of life?,Atom,Molecule,Cell,Organism,3
+How many hearts does an octopus have?,One,Two,Three,Four,3
+What is the chemical formula for water?,H,O,H2O,CO2,NH3,3
+What is the value of Pi (approximately)?,2.14,3.14,4.14,1.14,2
+Which is the fastest land animal?,Cheetah,Lion,Leopard,Tiger,1
+What is the capital of Australia?,Sydney,Melbourne,Canberra,Brisbane,3
+Which bird can fly backward?,Eagle,Parrot,Hummingbird,Swallow,3
+Which programming language is used for iOS app development?,Python,Java,C#,Swift,4
+What is the name of our galaxy?,Milky Way,Andromeda,Sombrero,Whirlpool,1
+What is the chemical symbol for Sodium?,So,Na,K,Cl,2
+How many bits are in a byte?,4,8,16,32,2
+What is the tallest mountain in the world?,K2,Kangchenjunga,Everest,Lhotse,3
+Which animal is known as the King of the Jungle?,Tiger,Elephant,Lion,Cheetah,3
+What is 12 * 12?,132,144,156,121,2
+What is the most abundant gas in the Earth's atmosphere?,Oxygen,Nitrogen,Carbon Dioxide,Hydrogen,2
+What does CPU stand for?,Central Processing Unit,Computer Processing Unit,Central Programming Unit,Core Processing Unit,1
+What is the capital of Germany?,Munich,Berlin,Hamburg,Frankfurt,2
+Which ocean is the largest?,Atlantic,Indian,Pacific,Arctic,3
+What is the full form of RAM?,Read All Memory,Random Access Memory,Run Access Memory,Random Allocated Memory,2
+What is the capital of India?,Mumbai,Delhi,Kolkata,Chennai,2
+What is the cube of 3?,9,18,27,36,3
+Who painted the Mona Lisa?,Vincent van Gogh,Pablo Picasso,Leonardo da Vinci,Claude Monet,3
+What is the chemical symbol for Gold?,Au,Ag,Fe,Cu,1

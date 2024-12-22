@@ -3,6 +3,7 @@ import csv
 from cvzone.HandTrackingModule import HandDetector
 import cvzone
 import time
+import random
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 1280)
@@ -38,10 +39,13 @@ with open(pathCSV, newline='\n') as f:
     reader = csv.reader(f)
     dataAll = list(reader)[1:]
 
+# Select 10 random questions
+dataAll = random.sample(dataAll, 10)
+
 # Create Object for each MCQ
-mcqList = []
-for q in dataAll:
-    mcqList.append(MCQ(q))
+mcqList = [MCQ(q) for q in dataAll]
+# for q in dataAll:
+#     mcqList.append(MCQ(q))
 
 print("Total MCQ Objects Created:", len(mcqList))
 
