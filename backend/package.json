@@ -18,6 +18,7 @@
   "homepage": "https://github.com/navaneethjainsl/Aikyam#readme",
   "type": "module",
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "bcrypt-nodejs": "^0.0.3",

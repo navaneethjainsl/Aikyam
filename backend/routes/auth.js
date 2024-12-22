@@ -1,5 +1,6 @@
 import express from 'express';
 import User from '../models/user.js';
+import getUserDocument from '../models/document.js';
 import {body, validationResult} from 'express-validator'
 import { name } from 'ejs';
 import passport from 'passport';
@@ -38,12 +39,22 @@ router.post('/signup',
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(req.body.password, salt);
     
+            // Create a user document in users collection
             let user = await User.create({
                 name: req.body.name,
                 username: req.body.username,
                 password: hashedPassword,
             });
-
+            
+            // Create a user's own collection
+            const Document = await getUserDocument(req.body.username)
+            
+            let doc = await Document.create({
+                username: req.body.username,
+                chatbot: [],
+            });
+            
+            // Create a jwt token
             const data = {
                 user: {
                     id: user._id,
@@ -74,7 +85,7 @@ router.post('/login',
         const {username, password} = req.body;
 
         
-        try{
+        try {
             
             const user = await User.findOne({ username: `${req.body.username}` });
             if(!user){
