@@ -14,12 +14,55 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 
 // Jarvis Assistant: POST 'http://localhost:5000/api/user/voice/assistant'
-router.post('/voice/assistant', (req, res) => {
+// Key: T1 -> Redirect to SIGN DETECTION TAB
+//      T2 -> Redirect to CHAT BOT TAB
+//      T3 -> Redirect to MULTIMEDIA TAB
+//      T4 -> Redirect to ACCESSIBILITY TAB
+//      T5 -> Redirect to JOBS and SCHEMES TAB
+//      none -> LLM will give the answer
+router.get('/voice/assistant', async (req, res) => {
     const query = req.body.query
-
-
-
     console.log(query);
+
+    const userMessage = `check if the given sentence is similar/closer to any one of the given sentences and return the sentence id. If none return none \nQuery: ${query}\nT1: Go to sign detection tab\nT2: Go to chat bot\nT3: Go to multimedi section\nT4: Go to accessibility section\nT5: Go to Jobs / Schemes section\nT6: Go to profile section\n Give the answer in one word`
+
+    let messages = []
+    // {
+    //     role: "system",
+    //     parts: [{ text: "Give the answer in one word" }],
+    // }
+
+    const system_instructions = "Give the answer in one word"
+
+    const chat = model.startChat({
+        system_instructions: system_instructions,
+        history: messages,
+        generationConfig: {
+            maxOutputTokens: 100,
+        },
+    });
+
+    messages = [...messages,
+    {
+        role: "user",
+        parts: [{ text: userMessage }],
+    }
+    ]
+
+    const result = await chat.sendMessage(userMessage);
+    const response = await result.response;
+    const text = response.text();
+
+    if(text.toLowerCase().includes("none")){
+        const result = await model.generateContent(query);
+        const response = await result.response;
+        const text = response.text();
+        console.log(text);
+        res.status(200).json({ success: true, message: text })
+        return
+    }
+    
+    res.status(200).json({ success: true, message: text })
 });
 
 // // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/signup'
