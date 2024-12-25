@@ -17,19 +17,21 @@ const JWT_SECRET = process.env.JWT_SECRET
 router.post('/voice/assistant', (req, res) => {
     const query = req.body.query
 
+
+
     console.log(query);
 });
 
-// Sign Language Detection Tab: POST 'http://localhost:5000/api/user/signup'
-router.post('/recognize', fetchuser, async (req, res) => {
-    try {
+// // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/signup'
+// router.post('/recognize', fetchuser, async (req, res) => {
+//     try {
 
-    }
-    catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-}
-)
+//     }
+//     catch (err) {
+//         res.status(500).json({ success: false, error: err.message });
+//     }
+// }
+// )
 
 
 // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/chatbot'
@@ -71,12 +73,12 @@ router.get('/chatbot', fetchuser, async (req, res) => {
         const text = response.text();
 
         messages = [...messages,
-            {
-                role: "model",
-                parts: [{ text: text }],
-            }
+        {
+            role: "model",
+            parts: [{ text: text }],
+        }
         ]
-        
+
         await Document.findOneAndUpdate(
             { username: username },
             {
@@ -97,16 +99,65 @@ router.get('/chatbot', fetchuser, async (req, res) => {
 }
 )
 
-// // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/chatbot'
-// router.post('/chatbot', fetchuser, async (req, res) => {
-//     try {
+// Jobs and schemes Tab: GET 'http://localhost:5000/api/user/schemes'
+router.get('/schemes', fetchuser, async (req, res) => {
+    try {
+        schemes = [
+            "https://nationaltrust.nic.in/niramaya-e-card/",
+            "https://nationaltrust.nic.in/disha/",
+            "https://nationaltrust.nic.in/vikaas/",
+            "https://nationaltrust.nic.in/gharaunda/",
+            "https://nationaltrust.nic.in/samarth/",
+            "https://nationaltrust.nic.in/badhte-kadam-scheme/",
+        ]
 
-//     }
-//     catch (err) {
-//         res.status(500).json({ success: false, error: err.message });
-//     }
-// }
-// )
+        res.status(200).json({ success: true, message: schemes })
+    }
+    catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+}
+)
+
+// Jobs and schemes Tab: GET 'http://localhost:5000/api/user/jobs'
+router.get('/jobs', fetchuser, async (req, res) => {
+    try {
+        const jobs = [
+            "https://divyangcareer.com/jobs/locomotor-disability/job-description-assistant-to-the-founder-online-french-coaching-business/",
+            "https://divyangcareer.com/jobs/physical-disability/telecaller-at-careerinpharma/",
+            "https://divyangcareer.com/jobs/physical-disability/assistant-manager-milk-plant/",
+            "https://divyangcareer.com/jobs/speech-and-language-disability/package-job/",
+            "https://divyangcareer.com/jobs/physical-disability/data-entry-operator-2/",
+            "https://divyangcareer.com/jobs/locomotor-disability/customer-care-executive-2/",
+            "https://divyangcareer.com/jobs/multiple-sclerosis/computer-science/",
+            "https://divyangcareer.com/jobs/multiple-disabilities/waiter-steward-delivery/",
+            "https://divyangcareer.com/jobs/locomotor-disability/video-kyc-analyst/",
+            "https://divyangcareer.com/jobs/locomotor-disability/punjabi-teacher/",
+            "https://divyangcareer.com/jobs/multiple-disabilities/remote-internet-assessor-urdu-speakers/",
+            "https://divyangcareer.com/jobs/multiple-disabilities/full-time-writer-analyst-bengali-speakers/",
+            "https://divyangcareer.com/jobs/multiple-disabilities/at-home-internet-assessor-punjabi-speakers/",
+            "https://divyangcareer.com/jobs/multiple-disabilities/homebased-sindhi-speaking-internet-rater/",
+            "https://divyangcareer.com/jobs/blood-disorder/pharmacist-required-dpharm/",
+            "https://divyangcareer.com/jobs/jobs-categories/junior-environmental-engineer/",
+        ];
+
+        otherJobs = [
+            "https://www.swarajability.org/apply-job/5228",
+            "https://www.swarajability.org/apply-job/5227",
+            "https://www.swarajability.org/apply-job/5226",
+            "https://www.swarajability.org/apply-job/5225",
+            "https://www.swarajability.org/apply-job/5224",
+            "https://www.swarajability.org/apply-job/5223",
+            "https://www.swarajability.org/apply-job/5222",
+        ]
+
+        res.status(200).json({ success: true, message: [...jobs, ...otherJobs] })
+    }
+    catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+}
+)
 
 
 // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/multimedia'
