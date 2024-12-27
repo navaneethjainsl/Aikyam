@@ -8,10 +8,12 @@ import fetchuser from '../Middleware/fetchuser.js';
 import User from '../models/user.js';
 import getUserDocument from '../models/document.js';
 import model from '../models/geminiModel.js';
+import NewsAPI from 'newsapi';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET
 
+const newsapi = new NewsAPI(process.env.NEWSAPI_API);
 
 // Jarvis Assistant: POST 'http://localhost:5000/api/user/voice/assistant'
 // Key: T1 -> Redirect to SIGN DETECTION TAB
@@ -24,7 +26,7 @@ router.get('/voice/assistant', async (req, res) => {
     const query = req.body.query
     console.log(query);
 
-    const userMessage = `check if the given sentence is similar/closer to any one of the given sentences and return the sentence id. If none return none \nQuery: ${query}\nT1: Go to sign detection tab\nT2: Go to chat bot\nT3: Go to multimedi section\nT4: Go to accessibility section\nT5: Go to Jobs / Schemes section\nT6: Go to profile section\n Give the answer in one word`
+    const userMessage = `check if the given sentence is similar/closer to any one of the given sentences and return the sentence id. If none return none \nQuery: ${query}\nT1: Go to sign detection tab\nT2: Go to chat bot\nT3: Go to ( multimedia / OCR / Text to speech / speech to text / Interactive learning ) section\nT4: Go to accessibility section\nT5: Go to Jobs / Schemes section\nT6: Go to profile section\n Give the answer in one word`
 
     let messages = []
     // {
@@ -53,7 +55,7 @@ router.get('/voice/assistant', async (req, res) => {
     const response = await result.response;
     const text = response.text();
 
-    if(text.toLowerCase().includes("none")){
+    if (text.toLowerCase().includes("none")) {
         const result = await model.generateContent(query);
         const response = await result.response;
         const text = response.text();
@@ -61,7 +63,7 @@ router.get('/voice/assistant', async (req, res) => {
         res.status(200).json({ success: true, message: text })
         return
     }
-    
+
     res.status(200).json({ success: true, message: text })
 });
 
@@ -226,72 +228,72 @@ router.post('/multimedia', fetchuser, async (req, res) => {
 )
 
 
-// Sign Language Detection Tab: GET 'http://localhost:5000/api/user/learn'
-router.get('/learn', fetchuser, async (req, res) => {
-    try {
+// // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/learn'
+// router.get('/learn', fetchuser, async (req, res) => {
+//     try {
 
-    }
-    catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-}
-)
+//     }
+//     catch (err) {
+//         res.status(500).json({ success: false, error: err.message });
+//     }
+// }
+// )
 
-// Sign Language Detection Tab: POST 'http://localhost:5000/api/user/learn'
-router.post('/learn', fetchuser, async (req, res) => {
-    try {
+// // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/learn'
+// router.post('/learn', fetchuser, async (req, res) => {
+//     try {
 
-    }
-    catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-}
-)
-
-
-// Sign Language Detection Tab: GET 'http://localhost:5000/api/user/accessibility'
-router.get('/accessibility', fetchuser, async (req, res) => {
-    try {
-
-    }
-    catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-}
-)
-
-// Sign Language Detection Tab: POST 'http://localhost:5000/api/user/accessibility'
-router.post('/accessibility', fetchuser, async (req, res) => {
-    try {
-
-    }
-    catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-}
-)
+//     }
+//     catch (err) {
+//         res.status(500).json({ success: false, error: err.message });
+//     }
+// }
+// )
 
 
-// Sign Language Detection Tab: GET 'http://localhost:5000/api/user/profile'
-router.get('/profile', fetchuser, async (req, res) => {
-    try {
+// // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/accessibility'
+// router.get('/accessibility', fetchuser, async (req, res) => {
+//     try {
 
-    }
-    catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-}
-)
+//     }
+//     catch (err) {
+//         res.status(500).json({ success: false, error: err.message });
+//     }
+// }
+// )
 
-// Sign Language Detection Tab: POST 'http://localhost:5000/api/user/profile'
-router.post('/profile', fetchuser, async (req, res) => {
-    try {
+// // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/accessibility'
+// router.post('/accessibility', fetchuser, async (req, res) => {
+//     try {
 
-    }
-    catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-}
-)
+//     }
+//     catch (err) {
+//         res.status(500).json({ success: false, error: err.message });
+//     }
+// }
+// )
+
+
+// // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/profile'
+// router.get('/profile', fetchuser, async (req, res) => {
+//     try {
+
+//     }
+//     catch (err) {
+//         res.status(500).json({ success: false, error: err.message });
+//     }
+// }
+// )
+
+// // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/profile'
+// router.post('/profile', fetchuser, async (req, res) => {
+//     try {
+
+//     }
+//     catch (err) {
+//         res.status(500).json({ success: false, error: err.message });
+//     }
+// }
+// )
 
 export default router;
