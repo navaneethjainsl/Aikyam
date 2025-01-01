@@ -16,19 +16,19 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET
 
 const newsapi = new NewsAPI(process.env.NEWSAPI_API);
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
 
-const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-});
+// const UserSchema = new mongoose.Schema({
+//   username: { type: String, required: true, unique: true },
+//   password: { type: String, required: true },
+// });
 
-// Hash password before saving
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
+// // Hash password before saving
+// UserSchema.pre('save', async function (next) {
+//   if (!this.isModified('password')) return next();
+//   this.password = await bcrypt.hash(this.password, 10);
+//   next();
+// });
 
 // Jarvis Assistant: POST 'http://localhost:5000/api/user/voice/assistant'
 // Key: T1 -> Redirect to SIGN DETECTION TAB
@@ -162,7 +162,7 @@ router.get('/chatbot', fetchuser, async (req, res) => {
 // Jobs and schemes Tab: GET 'http://localhost:5000/api/user/schemes'
 router.get('/schemes', fetchuser, async (req, res) => {
     try {
-        schemes = [
+        const schemes = [
             {
               title: "Skill India",
               organization: "Government of India",
