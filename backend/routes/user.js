@@ -10,10 +10,25 @@ import getUserDocument from '../models/document.js';
 import model from '../models/geminiModel.js';
 import NewsAPI from 'newsapi';
 
+import fetch from 'node-fetch';//mine
+
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET
 
 const newsapi = new NewsAPI(process.env.NEWSAPI_API);
+import mongoose from 'mongoose';
+
+const UserSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+});
+
+// Hash password before saving
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
 
 // Jarvis Assistant: POST 'http://localhost:5000/api/user/voice/assistant'
 // Key: T1 -> Redirect to SIGN DETECTION TAB
@@ -82,7 +97,7 @@ router.get('/voice/assistant', async (req, res) => {
 // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/chatbot'
 router.get('/chatbot', fetchuser, async (req, res) => {
     const username = "navaneethjainsl18"
-    const userMessage = req.body.question;
+    const userMessage = req.query.question;
     // const userMessage = "This is testing code. How are you?"
     console.log(userMessage)
     const Document = await getUserDocument(username)
@@ -92,7 +107,7 @@ router.get('/chatbot', fetchuser, async (req, res) => {
         console.log("doc")
         console.log(doc)
         if (!doc) {
-            return res.status(400).json({ success: false, message: 'User Chat not found' });
+            return res.json({ success: false, message: 'User Chat not found' });
         }
 
         let messages = doc.chatbot
@@ -115,7 +130,7 @@ router.get('/chatbot', fetchuser, async (req, res) => {
 
         const result = await chat.sendMessage(userMessage);
         const response = await result.response;
-        const text = response.text();
+        const text = await response.text();
 
         messages = [...messages,
         {
@@ -148,14 +163,21 @@ router.get('/chatbot', fetchuser, async (req, res) => {
 router.get('/schemes', fetchuser, async (req, res) => {
     try {
         schemes = [
-            "https://nationaltrust.nic.in/niramaya-e-card/",
-            "https://nationaltrust.nic.in/disha/",
-            "https://nationaltrust.nic.in/vikaas/",
-            "https://nationaltrust.nic.in/gharaunda/",
-            "https://nationaltrust.nic.in/samarth/",
-            "https://nationaltrust.nic.in/badhte-kadam-scheme/",
+            {
+              title: "Skill India",
+              organization: "Government of India",
+              eligibility: "18-35 years old",
+              benefits: "Free training, Certification",
+              description: "Enhance your skills with government-sponsored training programs in various sectors to improve employability."
+            },
+            {
+              title: "Startup India",
+              organization: "Ministry of Commerce and Industry",
+              eligibility: "Innovative business ideas",
+              benefits: "Funding, Mentorship, Tax benefits",
+              description: "Get support for your startup through this initiative aimed at fostering entrepreneurship and innovation."
+            },
         ]
-
         res.status(200).json({ success: true, message: schemes })
     }
     catch (err) {
@@ -168,32 +190,153 @@ router.get('/schemes', fetchuser, async (req, res) => {
 router.get('/jobs', fetchuser, async (req, res) => {
     try {
         const jobs = [
-            "https://divyangcareer.com/jobs/locomotor-disability/job-description-assistant-to-the-founder-online-french-coaching-business/",
-            "https://divyangcareer.com/jobs/physical-disability/telecaller-at-careerinpharma/",
-            "https://divyangcareer.com/jobs/physical-disability/assistant-manager-milk-plant/",
-            "https://divyangcareer.com/jobs/speech-and-language-disability/package-job/",
-            "https://divyangcareer.com/jobs/physical-disability/data-entry-operator-2/",
-            "https://divyangcareer.com/jobs/locomotor-disability/customer-care-executive-2/",
-            "https://divyangcareer.com/jobs/multiple-sclerosis/computer-science/",
-            "https://divyangcareer.com/jobs/multiple-disabilities/waiter-steward-delivery/",
-            "https://divyangcareer.com/jobs/locomotor-disability/video-kyc-analyst/",
-            "https://divyangcareer.com/jobs/locomotor-disability/punjabi-teacher/",
-            "https://divyangcareer.com/jobs/multiple-disabilities/remote-internet-assessor-urdu-speakers/",
-            "https://divyangcareer.com/jobs/multiple-disabilities/full-time-writer-analyst-bengali-speakers/",
-            "https://divyangcareer.com/jobs/multiple-disabilities/at-home-internet-assessor-punjabi-speakers/",
-            "https://divyangcareer.com/jobs/multiple-disabilities/homebased-sindhi-speaking-internet-rater/",
-            "https://divyangcareer.com/jobs/blood-disorder/pharmacist-required-dpharm/",
-            "https://divyangcareer.com/jobs/jobs-categories/junior-environmental-engineer/",
+            {
+                title: "Assistant Manager - Milk Plant",
+                company: "Divyang Career",
+                location: "Pune",
+                type: "Full-time",
+                salary: "₹35,000 - ₹50,000/month",
+                description: "Oversee the operations of the milk plant and ensure efficiency in production and distribution.",
+                link: "https://divyangcareer.com/jobs/physical-disability/assistant-manager-milk-plant/"
+              },
+              {
+                title: "Package Job",
+                company: "Speech and Language Disability Careers",
+                location: "Bangalore",
+                type: "Contract",
+                salary: "₹25,000/month",
+                description: "Pack and organize products as per the requirements. No prior experience required.",
+                link: "https://divyangcareer.com/jobs/speech-and-language-disability/package-job/"
+              },
+              {
+                title: "Data Entry Operator",
+                company: "Divyang Career",
+                location: "Mumbai",
+                type: "Full-time",
+                salary: "₹12,000 - ₹18,000/month",
+                description: "Perform accurate data entry tasks. Basic computer knowledge required.",
+                link: "https://divyangcareer.com/jobs/physical-disability/data-entry-operator-2/"
+              },
+              {
+                title: "Customer Care Executive",
+                company: "Divyang Career",
+                location: "Delhi",
+                type: "Full-time",
+                salary: "₹20,000 - ₹30,000/month",
+                description: "Provide support to customers by addressing queries and resolving issues.",
+                link: "https://divyangcareer.com/jobs/locomotor-disability/customer-care-executive-2/"
+              },
+              {
+                title: "Computer Science Specialist",
+                company: "Multiple Sclerosis Careers",
+                location: "Bangalore",
+                type: "Full-time",
+                salary: "₹40,000 - ₹70,000/month",
+                description: "Work on cutting-edge computer science projects to support research and development.",
+                link: "https://divyangcareer.com/jobs/multiple-sclerosis/computer-science/"
+              },
+              {
+                title: "Waiter/Steward/Delivery",
+                company: "Multiple Disabilities Careers",
+                location: "Chennai",
+                type: "Full-time",
+                salary: "₹15,000 - ₹25,000/month",
+                description: "Serve customers in restaurants or handle delivery tasks efficiently.",
+                link: "https://divyangcareer.com/jobs/multiple-disabilities/waiter-steward-delivery/"
+              },
+              {
+                title: "Video KYC Analyst",
+                company: "Divyang Career",
+                location: "Kolkata",
+                type: "Full-time",
+                salary: "₹25,000 - ₹35,000/month",
+                description: "Analyze KYC data via video interactions. Good communication skills are a must.",
+                link: "https://divyangcareer.com/jobs/locomotor-disability/video-kyc-analyst/"
+              },
+              {
+                title: "Punjabi Teacher",
+                company: "Divyang Career",
+                location: "Amritsar",
+                type: "Part-time",
+                salary: "₹20,000/month",
+                description: "Teach Punjabi language to students online or offline.",
+                link: "https://divyangcareer.com/jobs/locomotor-disability/punjabi-teacher/"
+              },
+              {
+                title: "Remote Internet Assessor (Urdu Speakers)",
+                company: "Multiple Disabilities Careers",
+                location: "Remote",
+                type: "Part-time",
+                salary: "₹10,000 - ₹15,000/month",
+                description: "Evaluate internet content quality in Urdu. Requires native proficiency.",
+                link: "https://divyangcareer.com/jobs/multiple-disabilities/remote-internet-assessor-urdu-speakers/"
+              },
+              {
+                title: "Full-time Writer/Analyst (Bengali Speakers)",
+                company: "Multiple Disabilities Careers",
+                location: "Kolkata",
+                type: "Full-time",
+                salary: "₹20,000 - ₹30,000/month",
+                description: "Analyze and create content in Bengali. Writing skills are essential.",
+                link: "https://divyangcareer.com/jobs/multiple-disabilities/full-time-writer-analyst-bengali-speakers/"
+              },
+              {
+                title: "At-home Internet Assessor (Punjabi Speakers)",
+                company: "Multiple Disabilities Careers",
+                location: "Remote",
+                type: "Part-time",
+                salary: "₹12,000/month",
+                description: "Assess Punjabi internet content for quality and relevance.",
+                link: "https://divyangcareer.com/jobs/multiple-disabilities/at-home-internet-assessor-punjabi-speakers/"
+              },
+              {
+                title: "Homebased Sindhi Speaking Internet Rater",
+                company: "Multiple Disabilities Careers",
+                location: "Remote",
+                type: "Part-time",
+                salary: "₹10,000 - ₹15,000/month",
+                description: "Evaluate and rate internet content in Sindhi. Requires native-level fluency.",
+                link: "https://divyangcareer.com/jobs/multiple-disabilities/homebased-sindhi-speaking-internet-rater/"
+              },
+              {
+                title: "Pharmacist (DPharm)",
+                company: "Divyang Career",
+                location: "Chennai",
+                type: "Full-time",
+                salary: "₹30,000 - ₹50,000/month",
+                description: "Dispense medicines and counsel patients. DPharm qualification required.",
+                link: "https://divyangcareer.com/jobs/blood-disorder/pharmacist-required-dpharm/"
+              },
+              {
+                title: "Junior Environmental Engineer",
+                company: "Divyang Career",
+                location: "Pune",
+                type: "Full-time",
+                salary: "₹40,000 - ₹60,000/month",
+                description: "Work on environmental projects to promote sustainability.",
+                link: "https://divyangcareer.com/jobs/jobs-categories/junior-environmental-engineer/"
+              },
+              {
+                title: "Apply Job 5228",
+                company: "Swarajability",
+                location: "Remote",
+                type: "Contract",
+                salary: "₹15,000 - ₹25,000/month",
+                description: "Work on unique assignments as part of the Swarajability initiative.",
+                link: "https://www.swarajability.org/apply-job/5228"
+              }
+            ,
+            // Add more jobs as needed
         ];
 
-        otherJobs = [
-            "https://www.swarajability.org/apply-job/5228",
-            "https://www.swarajability.org/apply-job/5227",
-            "https://www.swarajability.org/apply-job/5226",
-            "https://www.swarajability.org/apply-job/5225",
-            "https://www.swarajability.org/apply-job/5224",
-            "https://www.swarajability.org/apply-job/5223",
-            "https://www.swarajability.org/apply-job/5222",
+        const otherJobs = [
+            // "https://www.swarajability.org/apply-job/5228",
+            // "https://www.swarajability.org/apply-job/5227",
+            // "https://www.swarajability.org/apply-job/5226",
+            // "https://www.swarajability.org/apply-job/5225",
+            // "https://www.swarajability.org/apply-job/5224",
+            // "https://www.swarajability.org/apply-job/5223",
+            // "https://www.swarajability.org/apply-job/5222",
         ]
 
         res.status(200).json({ success: true, message: [...jobs, ...otherJobs] })
@@ -204,13 +347,82 @@ router.get('/jobs', fetchuser, async (req, res) => {
 }
 )
 
+//mine
+// Function to fetch news articles from NewsAPI
+const fetchNewsArticles = async (query) => {
 
+    const newsResponse = await newsapi.v2.everything({
+        q: query,
+        language: 'en',
+        sortBy: 'relevancy',
+        pageSize: 5,
+    });
+
+    if (newsResponse.status !== 'ok') {
+        throw new Error('Failed to fetch multimedia content from NewsAPI.');
+    }
+
+    return newsResponse.articles.map((article) => ({
+        title: article.title,
+        description: article.description,
+        url: article.url,
+        source: article.source.name,
+        publishedAt: article.publishedAt,
+    }));
+};
+
+// Function to fetch podcasts from Podcast API
+const fetchPodcasts = async (query) => {
+    const podcastApiUrl = 'https://api.taddy.org';
+    const podcastResponse = await fetch(`${podcastApiUrl}?query=${encodeURIComponent(query)}&limit=5`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${process.env.PODCAST_API}`,
+            'Content-Type': 'application/json',
+            'X-USER-ID': 2233,
+            'X-API-KEY': process.env.PODCAST_API,
+        },
+    });
+
+    if (!podcastResponse.ok) {
+        const errorText = await podcastResponse.text();
+        throw new Error(`Failed to fetch podcasts: ${errorText}`);
+    }
+
+    const podcastData = await podcastResponse.json();
+    if (!podcastData || !podcastData.podcasts) {
+        throw new Error('Failed to fetch podcasts.');
+    }
+
+    return podcastData.podcasts.map((podcast) => ({
+        title: podcast.title,
+        description: podcast.description,
+        url: podcast.url,
+        image: podcast.image,
+        publishedAt: podcast.publishedAt,
+    }));
+};
+//end mine
 // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/multimedia'
 router.get('/multimedia', fetchuser, async (req, res) => {
     try {
+          const query = "Sensory Disabled";
+        
+        // Fetch news articles and podcasts
+        const articles = await fetchNewsArticles(query);
+        //const podcasts = await fetchPodcasts(query);
 
+        // Combine both articles and podcasts and send the response
+        res.status(200).json({
+            success: true,
+            multimedia: {
+                articles,
+               // podcasts,
+            }
+        });
     }
     catch (err) {
+        console.error('Error fetching multimedia data1:', err.message);
         res.status(500).json({ success: false, error: err.message });
     }
 }
@@ -219,13 +431,27 @@ router.get('/multimedia', fetchuser, async (req, res) => {
 // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/multimedia'
 router.post('/multimedia', fetchuser, async (req, res) => {
     try {
+        const query = "pwd";  // Replace with your dynamic query logic if needed
+        
+        // Fetch news articles and podcasts
+        const articles = await fetchNewsArticles(query);
+       // const podcasts = await fetchPodcasts(query);
 
+        // Combine both articles and podcasts and send the response
+        res.status(200).json({
+            success: true,
+            multimedia: {
+                articles,
+               // podcasts,
+            }
+        });
     }
     catch (err) {
+        console.error('Error fetching multimedia data2:', err.message);
         res.status(500).json({ success: false, error: err.message });
     }
 }
-)
+);
 
 
 // // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/learn'
