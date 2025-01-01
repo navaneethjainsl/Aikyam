@@ -27,7 +27,7 @@ router.post('/signup',
         // console.log(user);
         
         if(user){
-            return res.status(400).json({
+            return res.json({
                 success: false, 
                 message: 'Username already exists'
             });
@@ -79,7 +79,7 @@ router.post('/login',
     async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.json({ errors: errors.array() });
         }
 
         const {username, password} = req.body;
@@ -89,12 +89,12 @@ router.post('/login',
             
             const user = await User.findOne({ username: `${req.body.username}` });
             if(!user){
-                return res.status(400).json({ success: false, message: 'Login with correct credentials' });
+                return res.json({ success: false, message: 'Login with correct credentials' });
             }
             
             const pwdCompare = await bcrypt.compare(password, user.password);
             if(!pwdCompare){
-                return res.status(400).json({ success: false, message: 'Login with correct credentials' });
+                return res.json({ success: false, message: 'Login with correct credentials' });
             }
             
             const data = {

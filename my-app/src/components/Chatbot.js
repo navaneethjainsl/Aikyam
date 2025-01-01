@@ -2,40 +2,78 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, Send } from 'lucide-react';
+import axios from 'axios'; // Ensure Axios is imported
 
 export default function Chatbot() {
-  const [message, setMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState([]);
+  const [message, setMessage] = useState(''); // Manages user input
+  const [chatHistory, setChatHistory] = useState([]); // Stores the entire chat history
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
+    // Scroll to the bottom of chat history on update
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [chatHistory]);
 
-  const sendMessage = () => {
+  // Function to handle message sending
+  const sendMessage = async () => {
     if (message.trim()) {
-      const newMessage = {
+      const userMessage = {
         id: Date.now(),
         text: message,
         sender: 'user',
       };
-      setChatHistory((prev) => [...prev, newMessage]);
+
+      // Add user message to chat history
+      setChatHistory((prev) => [...prev, userMessage]);
       setMessage('');
 
-      // Simulate bot response
-      setTimeout(() => {
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+      };
+      const authToken = getCookie('authToken')
+      console.log(authToken)
+
+      try {
+        // Send the message to the backend using Axios with headers
+        const response = await axios.get('http://localhost:5000/api/user/chatbot', {
+          headers: {
+            // 'Accept': '*/*',
+            // 'User-Agent': 'React App',
+            'auth-token': authToken, // Replace with the actual token
+          },
+          params: {
+            question: message, // Sending the user message as query parameter
+          },
+        });
+
+        // Add bot's response to chat history
         const botResponse = {
           id: Date.now(),
-          text: `I received: "${message}"`,
+          text: response.data.message, // Server response
           sender: 'bot',
         };
         setChatHistory((prev) => [...prev, botResponse]);
-      }, 1000);
+      } catch (error) {
+        console.error('Error communicating with the chatbot API:', error);
+
+        // Add an error message to the chat history
+        const errorMessage = {
+          id: Date.now(),
+          text: 'Sorry, something went wrong. Please try again later.',
+          sender: 'bot',
+        };
+        setChatHistory((prev) => [...prev, errorMessage]);
+      }
     }
   };
 
+
+  //Handles Enter key press
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       sendMessage();
@@ -53,11 +91,10 @@ export default function Chatbot() {
               chatHistory.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`p-3 rounded-lg ${
-                    msg.sender === 'user'
+                  className={`p-3 rounded-lg ${msg.sender === 'user'
                       ? 'bg-purple-600 ml-auto'
                       : 'bg-[#2a3353] mr-auto'
-                  } max-w-[70%]`}
+                    } max-w-[70%]`}
                 >
                   {msg.text}
                 </div>
