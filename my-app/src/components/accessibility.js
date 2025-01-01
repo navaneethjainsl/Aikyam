@@ -4,7 +4,7 @@ import Tesseract from 'tesseract.js';
 export default function AccessibilityTools() {
   const [image, setImage] = useState(null); // State to hold the image URL
   const [extractedText, setExtractedText] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [setIsProcessing] = useState(false);
   const [isReading, setIsReading] = useState(false); // Track whether text is being read
 
   // Handle image upload
