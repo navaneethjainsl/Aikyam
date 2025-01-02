@@ -9,6 +9,9 @@ import User from '../models/user.js';
 import getUserDocument from '../models/document.js';
 import model from '../models/geminiModel.js';
 import NewsAPI from 'newsapi';
+// import { gql, request } from 'graffle'
+// import pkg from 'graffle';
+// const { gql, request } = pkg;
 
 import fetch from 'node-fetch';//mine
 
@@ -372,35 +375,75 @@ const fetchNewsArticles = async (query) => {
 };
 
 // Function to fetch podcasts from Podcast API
-const fetchPodcasts = async (query) => {
-    const podcastApiUrl = 'https://api.taddy.org';
-    const podcastResponse = await fetch(`${podcastApiUrl}?query=${encodeURIComponent(query)}&limit=5`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${process.env.PODCAST_API}`,
+const fetchPodcasts = async (str) => {
+    console.log(str)
+//     const query = gql`
+//   query getPodcastSeries($name: ${str} !)
+//     `
+    // const podcastApiUrl = 'https://api.taddy.org';
+    // const podcastResponse = await fetch(`${podcastApiUrl}?query=${encodeURIComponent(query)}&limit=5`, {
+    //     method: 'GET',
+    //     headers: {
+    //         //'Authorization': `Bearer ${process.env.PODCAST_API}`,
+    //         'Content-Type': 'application/json',
+    //         'X-USER-ID': 2233,
+    //         'X-API-KEY': process.env.PODCAST_API,
+    //     },
+    //     query :JSON.stringify({
+    //         query: '{ getPodcastSeries(name: "This American Life") { uuid name } }',
+    //     })
+    // });
+        const podcastApiUrl = 'https://api.taddy.org';
+        const headers = {
             'Content-Type': 'application/json',
             'X-USER-ID': 2233,
-            'X-API-KEY': process.env.PODCAST_API,
-        },
-    });
+            'X-API-KEY': process.env.PODCAST_API, // Replace with your actual API key
+        };
+    
+        const body = JSON.stringify({
+            query: `{ getPodcastSeries(name: "${str}") { uuid name rssUrl } }`,
+        });
+    
+        try {
+            const response = await fetch(podcastApiUrl, {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            });
+    console.log(response)
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to fetch podcast series: ${errorText}`);
+            }
+    
+            const data = await response.json();
+            console.log("data")
+            // console.log(data)
+            return data;
+        } catch (error) {
+            console.error('Error:', error.message);
+            throw error;
+        }
+    
+    // Example usage
+    
+    // if (!podcastResponse.ok) {
+    //     const errorText = await podcastResponse.text();
+    //     throw new Error(`Failed to fetch podcasts: ${errorText}`);
+    // }
 
-    if (!podcastResponse.ok) {
-        const errorText = await podcastResponse.text();
-        throw new Error(`Failed to fetch podcasts: ${errorText}`);
-    }
+    // const podcastData = await podcastResponse.json();
+    // if (!podcastData || !podcastData.podcasts) {
+    //     throw new Error('Failed to fetch podcasts.');
+    // }
 
-    const podcastData = await podcastResponse.json();
-    if (!podcastData || !podcastData.podcasts) {
-        throw new Error('Failed to fetch podcasts.');
-    }
-
-    return podcastData.podcasts.map((podcast) => ({
-        title: podcast.title,
-        description: podcast.description,
-        url: podcast.url,
-        image: podcast.image,
-        publishedAt: podcast.publishedAt,
-    }));
+    // return podcastData.podcasts.map((podcast) => ({
+    //     title: podcast.title,
+    //     description: podcast.description,
+    //     url: podcast.url,
+    //     image: podcast.image,
+    //     publishedAt: podcast.publishedAt,
+    // }));
 };
 //end mine
 // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/multimedia'
@@ -410,19 +453,17 @@ router.get('/multimedia', fetchuser, async (req, res) => {
         
         // Fetch news articles and podcasts
         const articles = await fetchNewsArticles(query);
-        //const podcasts = await fetchPodcasts(query);
-
+        const podcasts = await fetchPodcasts(query);
+        console.log(podcasts)
         // Combine both articles and podcasts and send the response
         res.status(200).json({
             success: true,
-            multimedia: {
-                articles,
-               // podcasts,
-            }
+            podcasts:podcasts
         });
+        // res.(podcasts)
     }
     catch (err) {
-        console.error('Error fetching multimedia data1:', err.message);
+        // console.error('Error fetching multimedia data1:', err.message);
         res.status(500).json({ success: false, error: err.message });
     }
 }
@@ -434,15 +475,15 @@ router.post('/multimedia', fetchuser, async (req, res) => {
         const query = "pwd";  // Replace with your dynamic query logic if needed
         
         // Fetch news articles and podcasts
-        const articles = await fetchNewsArticles(query);
-       // const podcasts = await fetchPodcasts(query);
-
+        // const articles = await fetchNewsArticles(query);
+        const podcasts = await fetchPodcasts(query);
+console.log(podcasts)
         // Combine both articles and podcasts and send the response
         res.status(200).json({
             success: true,
             multimedia: {
                 articles,
-               // podcasts,
+                podcasts,
             }
         });
     }
