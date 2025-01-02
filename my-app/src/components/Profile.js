@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { User, Mail, Calendar, Moon, Sun, Bell, ChevronDown, X } from 'lucide-react'
 import AIMotionIcon from './AiMotionIcon'
+import VoiceAssistantModal from './VoiceAssistantModal';
 
 const Switch = ({ id, checked, onChange }) => (
   <label htmlFor={id} className="flex items-center cursor-pointer">
@@ -46,8 +47,8 @@ const AIAnimation = ({ className }) => {
       ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
     }
 
-    setCanvasSize()
-    window.addEventListener('resize', setCanvasSize)
+    // setCanvasSize()
+    // window.addEventListener('resize', setCanvasSize)
 
     let animationFrameId
     let angle = 0
@@ -115,7 +116,7 @@ const AIAnimation = ({ className }) => {
       animationFrameId = requestAnimationFrame(animate)
     }
 
-    animate()
+    // animate()
 
     return () => {
       window.removeEventListener('resize', setCanvasSize)
@@ -158,7 +159,7 @@ export default function Profile() {
         </button>
       </div>
 
-      <div className="bg-[#1c2444] rounded-lg shadow-lg p-6 mb-6">
+      {/* <div className="bg-[#1c2444] rounded-lg shadow-lg p-6 mb-6">
         <h2 className="text-2xl font-semibold mb-4 text-white">Accessibility Preferences</h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -202,7 +203,7 @@ export default function Profile() {
             onChange={() => setNotifications(!notifications)}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Voice Assistant Button */}
       <button
@@ -217,7 +218,7 @@ export default function Profile() {
       </button>
 
       {/* Voice Assistant Modal */}
-      {isVoiceAssistantOpen && (
+      {/* {isVoiceAssistantOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[#1c2444]/90 backdrop-blur-xl rounded-lg p-6 w-96 relative overflow-hidden">
             <div className="absolute inset-0">
@@ -243,7 +244,12 @@ export default function Profile() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
+      
+      <VoiceAssistantModal
+        isOpen={isVoiceAssistantOpen}
+        onClose={() => setIsVoiceAssistantOpen(false)}
+      />
     </div>
   )
 }
