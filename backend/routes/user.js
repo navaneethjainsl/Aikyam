@@ -41,7 +41,7 @@ const newsapi = new NewsAPI(process.env.NEWSAPI_API);
 //      T5 -> Redirect to JOBS and SCHEMES TAB
 //      none -> LLM will give the answer
 router.get('/voice/assistant', async (req, res) => {
-    const query = req.body.query
+    const query = req.query.query
     console.log(query);
 
     const userMessage = `check if the given sentence is similar/closer to any one of the given sentences and return the sentence id. If none return none \nQuery: ${query}\nT1: Go to sign detection tab\nT2: Go to chat bot\nT3: Go to ( multimedia / OCR / Text to speech / speech to text / Interactive learning ) section\nT4: Go to accessibility section\nT5: Go to Jobs / Schemes section\nT6: Go to profile section\n Give the answer in one word`
@@ -377,22 +377,6 @@ const fetchNewsArticles = async (query) => {
 // Function to fetch podcasts from Podcast API
 const fetchPodcasts = async (str) => {
     console.log(str)
-//     const query = gql`
-//   query getPodcastSeries($name: ${str} !)
-//     `
-    // const podcastApiUrl = 'https://api.taddy.org';
-    // const podcastResponse = await fetch(`${podcastApiUrl}?query=${encodeURIComponent(query)}&limit=5`, {
-    //     method: 'GET',
-    //     headers: {
-    //         //'Authorization': `Bearer ${process.env.PODCAST_API}`,
-    //         'Content-Type': 'application/json',
-    //         'X-USER-ID': 2233,
-    //         'X-API-KEY': process.env.PODCAST_API,
-    //     },
-    //     query :JSON.stringify({
-    //         query: '{ getPodcastSeries(name: "This American Life") { uuid name } }',
-    //     })
-    // });
         const podcastApiUrl = 'https://api.taddy.org';
         const headers = {
             'Content-Type': 'application/json',
@@ -424,79 +408,73 @@ const fetchPodcasts = async (str) => {
             console.error('Error:', error.message);
             throw error;
         }
-    
-    // Example usage
-    
-    // if (!podcastResponse.ok) {
-    //     const errorText = await podcastResponse.text();
-    //     throw new Error(`Failed to fetch podcasts: ${errorText}`);
-    // }
-
-    // const podcastData = await podcastResponse.json();
-    // if (!podcastData || !podcastData.podcasts) {
-    //     throw new Error('Failed to fetch podcasts.');
-    // }
-
-    // return podcastData.podcasts.map((podcast) => ({
-    //     title: podcast.title,
-    //     description: podcast.description,
-    //     url: podcast.url,
-    //     image: podcast.image,
-    //     publishedAt: podcast.publishedAt,
-    // }));
 };
 //end mine
-// Sign Language Detection Tab: GET 'http://localhost:5000/api/user/multimedia'
-router.get('/multimedia', fetchuser, async (req, res) => {
+// Sign Language Detection Tab: GET 'http://localhost:5000/api/user/news'
+router.get('/news', fetchuser, async (req, res) => {
     try {
           const query = "Sensory Disabled";
         
-        // Fetch news articles and podcasts
         const articles = await fetchNewsArticles(query);
-        const podcasts = await fetchPodcasts(query);
-        console.log(podcasts)
-        // Combine both articles and podcasts and send the response
+        //console.log(podcasts)
         res.status(200).json({
             success: true,
-           // podcasts:podcasts
            multimedia: {
             articles,
+        }
+        });
+    }
+    catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+}
+)
+
+// Sign Language Detection Tab: GET 'http://localhost:5000/api/user/podcast'
+router.get('/podcast', fetchuser, async (req, res) => {
+    try {
+          const query = "Sensory Disabled";
+        
+        const podcasts = await fetchPodcasts(query);
+        //console.log(podcasts)
+        res.status(200).json({
+            success: true,
+           multimedia: {
             podcasts,
         }
         });
-        // res.(podcasts)
+        
     }
     catch (err) {
-        // console.error('Error fetching multimedia data1:', err.message);
         res.status(500).json({ success: false, error: err.message });
     }
 }
 )
 
 // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/multimedia'
-router.post('/multimedia', fetchuser, async (req, res) => {
-    try {
-        const query = "pwd";  // Replace with your dynamic query logic if needed
+// router.post('/multimedia', fetchuser, async (req, res) => {
+//     try {
+//         const query = "pwd";  // Replace with your dynamic query logic if needed
         
-        // Fetch news articles and podcasts
-        // const articles = await fetchNewsArticles(query);
-        const podcasts = await fetchPodcasts(query);
-console.log(podcasts)
-        // Combine both articles and podcasts and send the response
-        res.status(200).json({
-            success: true,
-            multimedia: {
-                articles,
-                podcasts,
-            }
-        });
-    }
-    catch (err) {
-        console.error('Error fetching multimedia data2:', err.message);
-        res.status(500).json({ success: false, error: err.message });
-    }
-}
-);
+//         // Fetch news articles and podcasts
+//         // const articles = await fetchNewsArticles(query);
+//         const podcasts = await fetchPodcasts(query);
+// console.log(podcasts)
+//         // Combine both articles and podcasts and send the response
+//         res.status(200).json({
+//             success: true,
+//             multimedia: {
+//                 articles,
+//                 podcasts,
+//             }
+//         });
+//     }
+//     catch (err) {
+//         console.error('Error fetching multimedia data2:', err.message);
+//         res.status(500).json({ success: false, error: err.message });
+//     }
+// }
+// );
 
 
 // // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/learn'
