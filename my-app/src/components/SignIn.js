@@ -126,15 +126,15 @@ export default function SignIn() {
                 type="checkbox"
                 className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
+              {/* <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
                 Remember me
-              </label>
+              </label> */}
             </div>
-            <div className="text-sm">
+            {/* <div className="text-sm">
               <a href="#signIn" className="font-medium text-purple-400 hover:text-purple-300">
                 Forgot your password?
               </a>
-            </div>
+            </div> */}
           </div>
           <div>
             <button
