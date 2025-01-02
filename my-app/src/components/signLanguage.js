@@ -467,20 +467,24 @@ export default function SignLanguageDetector() {
 
         if (data === "No hand detected") {
           // Insert a space when "next" is detected
-          setDetectedText("No hand detected")
+          setResponseText("No hand detected")
+           
+          setDetectedText((prev) => prev + lastDetectedRef.current)
+          lastDetectedRef.current=""
           // setDetectedText((prev) => prev + " ");
         } 
         else if (data === "next") {
           // Append the last detected character when no hand is detected
           if (lastDetectedRef.current) {
-            setDetectedText((prev) => prev + lastDetectedRef.current);  
+            setResponseText(" ");  
+            setDetectedText((prev) => prev + " ")
           }
         } else {
           // Update detected text with the new character and update last detected letter
           lastDetectedRef.current = data;
-          setDetectedText((prev) => prev + data);
+          setResponseText(data);
         }
-        setResponseText(data); // Update the response text for display
+        // setResponseText(data); // Update the response text for display
       };
 
       // Capture frames and send to backend
@@ -542,7 +546,7 @@ export default function SignLanguageDetector() {
       />
       <p>{responseText || "No prediction yet"}</p>
       <textarea
-        value={detectedText === "No hand detected" ? "" : responseText}
+        value={detectedText === "No hand detected" ? "" : detectedText}
         onChange={(e) => setDetectedText(e.target.value)} // Allow manual editing
         rows={5}
         cols={50}
