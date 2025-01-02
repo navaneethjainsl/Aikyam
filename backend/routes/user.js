@@ -458,7 +458,11 @@ router.get('/multimedia', fetchuser, async (req, res) => {
         // Combine both articles and podcasts and send the response
         res.status(200).json({
             success: true,
-            podcasts:podcasts
+           // podcasts:podcasts
+           multimedia: {
+            articles,
+            podcasts,
+        }
         });
         // res.(podcasts)
     }
