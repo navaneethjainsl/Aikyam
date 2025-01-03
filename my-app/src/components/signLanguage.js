@@ -75,13 +75,19 @@ export default function SignLanguageDetector() {
           if (!handDetectedRef.current) {
             handDetectedRef.current = true;
             setDetectedTextWords("NEXT");
-            setResponseTextWords((prev) => `${prev}${lastDetectedRef.current}`);
+            if (lastDetectedRef.current) {
+              // setResponseTextAlphabets((prev) => `${prev}${lastDetectedRef.current}`);
+              setResponseTextWords((prev) => `${prev}${lastDetectedRef.current}`);
+            }
           }
         } else if (data === "No hand detected") {
           if (!handDetectedRef.current) {
             handDetectedRef.current = true;
             setDetectedTextWords("No hand detected");
-            setResponseTextWords((prev) => `${prev} `);
+            if (lastDetectedRef.current) {
+              // setResponseTextAlphabets((prev) => `${prev}${lastDetectedRef.current}`);
+              setResponseTextWords((prev) => `${prev} ${lastDetectedRef.current}`);
+            }
           }
         } else {
           handDetectedRef.current = false;
@@ -240,7 +246,7 @@ export default function SignLanguageDetector() {
           <p>{detectedTextAlphabets || "No prediction yet"}</p>
           <textarea
             value={responseTextAlphabets}
-            onChange={(e) => setResponseTextAlphabets(e.target.value)} // Allow manual editing
+            // onChange={(e) => setResponseTextAlphabets(e.target.value)} // Allow manual editing
             rows={5}
             cols={50}
             placeholder="Detected text will appear here..."
@@ -309,7 +315,7 @@ export default function SignLanguageDetector() {
           <p>{detectedTextWords || "No prediction yet"}</p>
           <textarea
             value={responseTextWords}
-            onChange={(e) => setResponseTextWords(e.target.value)} // Allow manual editing
+            // onChange={(e) => setResponseTextWords(e.target.value)} // Allow manual editing
             rows={5}
             cols={50}
             placeholder="Detected text will appear here..."
