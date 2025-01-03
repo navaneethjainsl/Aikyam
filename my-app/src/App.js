@@ -1,31 +1,34 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link,useNavigate } from 'react-router-dom';
-import { Bell, Camera, MessageSquare, PlayCircle, Settings, User, Wrench, Briefcase, Search } from 'lucide-react';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate, useLocation } from 'react-router-dom';
+import { Camera, MessageSquare, PlayCircle, Wrench, Briefcase, User } from 'lucide-react';
 import LandingPage from './components/Page';
 import SignLanguageDetector from './components/signLanguage';
 import Chatbot from './components/Chatbot.js';
 import Multimedia from './components/media';
 import AccessibilityTools from './components/accessibility';
 import JobsAndSchemes from './components/JobsSchemes';
-import './index.css'
 import Profile from './components/Profile';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
+import './index.css';
 
-function Sidebar({ activeSection, setActiveSection }) {
+
+function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [
-    { icon: Camera, label: 'Sign Language Detector', key: 'signLanguage' },
-    { icon: MessageSquare, label: 'Chat Bot Assistance', key: 'chatbot' },
-    { icon: PlayCircle, label: 'Multimedia', key: 'multimedia' },
-    { icon: Wrench, label: 'Accessibility Tools', key: 'accessibilityTools' },
-    { icon: Briefcase, label: 'Jobs & Schemes', key: 'jobsAndSchemes' },
-    { icon: User, label: 'Profile', key: 'profile' },
+    { icon: Camera, label: 'Sign Language Detector', path: '/signLanguage' },
+    { icon: MessageSquare, label: 'Chat Bot Assistance', path: '/chatbot' },
+    { icon: PlayCircle, label: 'Multimedia', path: '/multimedia' },
+    { icon: Wrench, label: 'Accessibility Tools', path: '/accessibilityTools' },
+    { icon: Briefcase, label: 'Jobs & Schemes', path: '/jobsAndSchemes' },
+    { icon: User, label: 'Profile', path: '/profile' },
   ];
-  
+
   return (
     <aside className="w-64 bg-[#0f1535] border-r border-white/10 p-4 flex flex-col">
+      <img src="/img/cardimgfree.png" alt="Example" />
       <div className="mb-8">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
           Aikyam
@@ -34,15 +37,14 @@ function Sidebar({ activeSection, setActiveSection }) {
       <nav className="flex-grow">
         <ul className="space-y-2">
           {menuItems.map((item) => (
-            <li key={item.key}>
+            <li key={item.path}>
               <Link
-                to={`/${item.key}`}
+                to={item.path}
                 className={`flex items-center py-2 px-4 rounded-lg transition-colors ${
-                  activeSection === item.key
+                  location.pathname === item.path
                     ? 'bg-[#1c2444] text-purple-400'
                     : 'text-gray-300 hover:bg-[#1c2444]'
                 }`}
-                onClick={() => setActiveSection(item.key)}
               >
                 <item.icon className="mr-3 h-5 w-5" />
                 {item.label}
@@ -52,29 +54,15 @@ function Sidebar({ activeSection, setActiveSection }) {
         </ul>
       </nav>
       <div className="mt-auto">
-        {/* <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full pl-10 pr-4 py-2 bg-[#1c2444] rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        </div> */}
         <div className="flex items-center justify-between mt-4">
-          {/* <button className="p-2 hover:bg-[#1c2444] rounded-lg">
-            <Bell className="h-5 w-5" />
-          </button>
-          <button className="p-2 hover:bg-[#1c2444] rounded-lg">
-            <Settings className="h-5 w-5" />
-          </button> */}
-          <button 
+          <button
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-lg hover:opacity-90 transition-colors"
             onClick={() => navigate('/signup')}
           >
             <User className="h-3 w-3" />
             Sign Up
           </button>
-          <button 
+          <button
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-lg hover:opacity-90 transition-colors"
             onClick={() => navigate('/signin')}
           >
@@ -88,12 +76,10 @@ function Sidebar({ activeSection, setActiveSection }) {
 }
 
 export default function App() {
-  const [activeSection, setActiveSection] = useState('signLanguage');
-
   return (
     <Router>
       <div className="flex h-screen bg-[#0f1535] text-white">
-        <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+        <Sidebar />
         <main className="flex-1 overflow-auto p-8">
           <Routes>
             <Route path="/" element={<LandingPage />} />
