@@ -1,120 +1,126 @@
 import React, { useState, useRef, useEffect } from "react";
+import io from "socket.io-client";
 
 export default function SignLanguageDetector() {
   const [isDetecting, setIsDetecting] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [responseText, setResponseText] = useState("");
   const [detectedText, setDetectedText] = useState("");
+  const detectionInterval = useRef(null);
   const videoRef = useRef(null);
-  const streamRef = useRef(null);
-  const wsRef = useRef(null);
+  const socketRef = useRef(null);
   const lastDetectedRef = useRef(""); // To store the last detected letter
+  const handDetectedRef = useRef(false);
+
+  let last = ""
 
   useEffect(() => {
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
+      // Cleanup WebSocket connection on unmount
+      if (socketRef.current) {
+        socketRef.current.disconnect();
       }
     };
   }, []);
+  useEffect(() => {
+    return () => {
+      // Cleanup WebSocket connection on unmount
+      lastDetectedRef.current = "";
+    };
+  }, [responseText]);
 
-  const handleCameraAccess = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoRef.current.srcObject = stream;
-      streamRef.current = stream;
-      setIsCameraActive(true);
-    } catch (error) {
-      console.error("Error accessing camera:", error);
-      alert("Unable to access camera. Please check your permissions.");
+  const handleCameraAccess = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+        setIsCameraActive(true);
+      })
+      .catch((err) => console.error("Error accessing webcam:", err));
+  };
+
+  const handleStopCamera = () => {
+    const stream = videoRef.current.srcObject;
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setIsCameraActive(false);
+    stopWebSocket();
+  };
+
+  const startWebSocket = () => {
+    if (!socketRef.current) {
+      socketRef.current = io("http://localhost:8000");
+
+      socketRef.current.on("prediction", (data) => {
+        if (data === "NEXT") {
+          if (!handDetectedRef.current) {
+            handDetectedRef.current = true;
+            setDetectedText("NEXT");
+            if (lastDetectedRef.current) {
+              setResponseText((prev) => `${prev}${lastDetectedRef.current}`);
+              // lastDetectedRef.current = "";
+            }
+          }
+        } else if (data === "No hand detected") {
+          if (!handDetectedRef.current) {
+            handDetectedRef.current = true;
+            setDetectedText("No hand detected");
+            setResponseText((prev) => `${prev} `);
+          }
+        } else {
+          handDetectedRef.current = false;
+          setDetectedText(data);
+          lastDetectedRef.current = data; // Update last detected letter
+        }
+      });
+    }
+  };
+
+  const stopWebSocket = () => {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
     }
   };
 
   const handleStartDetection = () => {
-    if (!streamRef.current) return;
+    if (!isCameraActive) return;
+
+    startWebSocket();
     setIsDetecting(true);
-  };
 
-  useEffect(() => {
-    if (isDetecting) {
-      wsRef.current = new WebSocket("ws://localhost:8000/ws");
-      wsRef.current.onopen = () => {
-        console.log("WebSocket connected");
-      };
-      wsRef.current.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        alert("WebSocket connection failed. Check the backend server.");
-      };
-      wsRef.current.onmessage = (event) => {
-        const data = event.data;
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
 
-        if (data === "No hand detected") {
-          // Insert a space when "next" is detected
-          setDetectedText("No hand detected")
-          // setDetectedText((prev) => prev + " ");
-        } 
-        else if (data === "next") {
-          // Append the last detected character when no hand is detected
-          if (lastDetectedRef.current) {
-            setDetectedText((prev) => prev + lastDetectedRef.current);  
-          }
-        } else {
-          // Update detected text with the new character and update last detected letter
-          lastDetectedRef.current = data;
-          setDetectedText((prev) => prev + data);
-        }
-        setResponseText(data); // Update the response text for display
-      };
-
-      // Capture frames and send to backend
-      const canvas = document.createElement("canvas");
-      const video = videoRef.current;
-
-      const sendFrame = async () => {
-        if (!isDetecting || !video || !canvas || !wsRef.current) return;
+    detectionInterval.current = setInterval(() => {
+      if (videoRef.current && socketRef.current) {
+        const video = videoRef.current;
 
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        const ctx = canvas.getContext("2d");
 
-        ctx.save();
-        ctx.scale(-1, 1); // Flip horizontally
-        ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height); // Draw the video on the flipped canvas
-        ctx.restore();
+        // Flip the image horizontally
+        context.translate(canvas.width, 0);
+        context.scale(-1, 1);
+
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const frameData = canvas.toDataURL("image/jpeg");
-
-        if (wsRef.current.readyState === WebSocket.OPEN) {
-          wsRef.current.send(frameData);
-        }
-
-        setTimeout(sendFrame, 100); // Send frames every 100ms
-      };
-      sendFrame();
-    }
-  }, [isDetecting]);
+        socketRef.current.emit("video_frame", frameData);
+      }
+    }, 700); // Send frames every 100ms
+  };
 
   const handleStopDetection = () => {
     setIsDetecting(false);
-    if (wsRef.current) {
-      wsRef.current.close();
+    if (detectionInterval.current) {
+      clearInterval(detectionInterval.current);
     }
-  };
-
-  const handleStopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-    setIsCameraActive(false);
-    handleStopDetection();
-  };
-  
+    stopWebSocket();
+  };  
 
   return (
     <div>
@@ -124,11 +130,11 @@ export default function SignLanguageDetector() {
         autoPlay
         muted
         className="video-preview"
-        style={{ transform: "scaleX(-1)" }} // Flip the video horizontally
+        style={{ width: "100%", transform: "scaleX(-1)" }} // Flip the video horizontally
       />
-      <p>{responseText || "No prediction yet"}</p>
+      <p>{detectedText || "No prediction yet"}</p>
       <textarea
-        value={detectedText === "No hand detected" ? "" : responseText}
+        value={responseText}
         onChange={(e) => setDetectedText(e.target.value)} // Allow manual editing
         rows={5}
         cols={50}

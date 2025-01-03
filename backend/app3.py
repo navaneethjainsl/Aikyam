@@ -21,9 +21,12 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # model = load_model()  # Load your ML model here
 
 model = load_model("model2.h5")
+model2 = load_model("model3.h5")
 mp_hands = mp.solutions.hands
 alphabet = list(string.ascii_uppercase)
 alphabet.insert(alphabet.index('N') + 1, "NEXT")
+
+words = ['Calm Down', 'Father', 'Fine', 'Hello', 'I hate you', 'I love you', "I'm/ I am", 'Love', 'Money', 'Mother', 'Okay', 'Sorry', 'Stop', 'Telephone', 'Water', 'Where', 'Why', 'Yes']
 
 def predict_landmarks(landmarks):
     """Predict the sign language alphabet from landmarks."""
@@ -31,6 +34,14 @@ def predict_landmarks(landmarks):
     predictions = model.predict(df, verbose=0)
     predicted_class = np.argmax(predictions, axis=1)
     return alphabet[predicted_class[0]]
+
+def predict_landmarks2(landmarks):
+    """Predict the sign language alphabet from landmarks."""
+    df = pd.DataFrame(landmarks).transpose()
+    predictions = model2.predict(df, verbose=0)
+    predicted_class = np.argmax(predictions, axis=1)
+    print(words[predicted_class[0]])
+    return words[predicted_class[0]]
 
 def pre_process_landmark(landmark_list):
     temp_landmark_list = copy.deepcopy(landmark_list)
@@ -51,7 +62,7 @@ def calc_landmark_list(image, landmarks):
         landmark_point.append([landmark_x, landmark_y])
     return landmark_point
 
-def process_frame(image_data):
+def process_frame(image_data, num):
     """Process incoming frame data for prediction."""
     try:
         print("hi process frame")
@@ -70,7 +81,10 @@ def process_frame(image_data):
                 for hand_landmarks in results.multi_hand_landmarks:
                     landmark_list = calc_landmark_list(frame, hand_landmarks)
                     pre_processed_landmark_list = pre_process_landmark(landmark_list)
-                    return predict_landmarks(pre_processed_landmark_list)
+                    if num == 1:
+                        return predict_landmarks(pre_processed_landmark_list)
+                    else :
+                        return predict_landmarks2(pre_processed_landmark_list)
     except Exception as e:
         print(f"Error processing frame: {e}")
     return "No hand detected"
@@ -84,10 +98,26 @@ def handle_video_frame(data):
     # frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
     # Make prediction
-    prediction = process_frame(data)  # Your prediction logic here
+    prediction = process_frame(data, 1)  # Your prediction logic here
 
     # Send prediction back to frontend
     socketio.emit("prediction", prediction)
+
+@socketio.on("video_frame2")
+def handle_video_frame(data):
+    # Decode the base64 image
+    # header, encoded = data.split(",", 1)
+    # img_data = base64.b64decode(encoded)
+    # np_arr = np.frombuffer(img_data, np.uint8)
+    # frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+    # Make prediction
+    print("inside indsider 2.0")
+    prediction = process_frame(data, 2)  # Your prediction logic here
+    
+
+    # Send prediction back to frontend
+    socketio.emit("prediction_words", prediction)
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=8000)

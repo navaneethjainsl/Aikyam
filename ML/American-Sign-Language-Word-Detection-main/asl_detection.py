@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the saved model
-model = keras.models.load_model("model2.h5")
+model = keras.models.load_model("model3.h5")
 
 # Mediapipe setup
 mp_drawing = mp.solutions.drawing_utils

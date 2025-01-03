@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Bell, Camera, MessageSquare, PlayCircle, Settings, User, Wrench, Briefcase, Search } from 'lucide-react';
 import LandingPage from './components/Page';
 import SignLanguageDetector from './components/signLanguage';
@@ -20,18 +20,22 @@ import AIMotionIcon from './components/AiMotionIcon'; // Assuming AIMotionIcon i
 
 function Sidebar({ activeSection, setActiveSection }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+
 
   const menuItems = [
-    { icon: Camera, label: 'Sign Language Detector', key: 'signLanguage' },
-    { icon: MessageSquare, label: 'Chat Bot Assistance', key: 'chatbot' },
-    { icon: PlayCircle, label: 'Multimedia', key: 'multimedia' },
-    { icon: Wrench, label: 'Accessibility Tools', key: 'accessibilityTools' },
-    { icon: Briefcase, label: 'Jobs & Schemes', key: 'jobsAndSchemes' },
-    { icon: User, label: 'Profile', key: 'profile' },
+    { icon: Camera, label: 'Sign Language Detector', path: '/signLanguage' },
+    { icon: MessageSquare, label: 'Chat Bot Assistance', path: '/chatbot' },
+    { icon: PlayCircle, label: 'Multimedia', path: '/multimedia' },
+    { icon: Wrench, label: 'Accessibility Tools', path: '/accessibilityTools' },
+    { icon: Briefcase, label: 'Jobs & Schemes', path: '/jobsAndSchemes' },
+    { icon: User, label: 'Profile', path: '/profile' },
   ];
 
   return (
     <aside className="w-64 bg-[#0f1535] border-r border-white/10 p-4 flex flex-col">
+      <img src="/img/cardimgfree.png" alt="Example" />
       <div className="mb-8">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
           Aikyam
@@ -40,12 +44,16 @@ function Sidebar({ activeSection, setActiveSection }) {
       <nav className="flex-grow">
         <ul className="space-y-2">
           {menuItems.map((item) => (
-            <li key={item.key}>
+            <li key={item.path}>
               <Link
-                to={`/${item.key}`}
-                className={`flex items-center py-2 px-4 rounded-lg transition-colors ${activeSection === item.key
+                to={item.path}
+
+                className={`flex items-center py-2 px-4 rounded-lg transition-colors ${location.pathname === item.path
+
                     ? 'bg-[#1c2444] text-purple-400'
+
                     : 'text-gray-300 hover:bg-[#1c2444]'
+
                   }`}
                 onClick={() => setActiveSection(item.key)}
               >
@@ -95,9 +103,11 @@ function Sidebar({ activeSection, setActiveSection }) {
 export default function App() {
   const [activeSection, setActiveSection] = useState('signLanguage');
   const [isVoiceAssistantOpen, setIsVoiceAssistantOpen] = useState(false);
+  const [listen, setIsListen] = useState(false)
 
   const toggleVoiceAssistant = () => {
     setIsVoiceAssistantOpen((prev) => !prev);
+    setIsListen((prev) => !prev);
   };
   return (
     <Router>
@@ -119,6 +129,7 @@ export default function App() {
           {/* Voice Assistant Modal */}
           <VoiceAssistantModal
             isOpen={isVoiceAssistantOpen}
+            listen={true}
             onClose={() => setIsVoiceAssistantOpen(false)}
           />
           <Routes>
