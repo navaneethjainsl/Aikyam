@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link,useNavigate } from 'react-router-dom';
 import { Bell, Camera, MessageSquare, PlayCircle, Settings, User, Wrench, Briefcase, Search } from 'lucide-react';
+import LandingPage from './components/Page';
 import SignLanguageDetector from './components/signLanguage';
 import Chatbot from './components/Chatbot.js';
 import Multimedia from './components/media';
@@ -95,6 +96,7 @@ export default function App() {
         <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
         <main className="flex-1 overflow-auto p-8">
           <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/signLanguage" element={<SignLanguageDetector />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/multimedia" element={<Multimedia />} />
