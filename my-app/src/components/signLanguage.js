@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import io from "socket.io-client";
 
-export default function SignLanguageDetector() {
+export default function SignLanguageDetector( {setSidebar} ) {
   const [isDetecting, setIsDetecting] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [responseTextAlphabets, setResponseTextAlphabets] = useState(""); // For Alphabets
@@ -15,6 +15,7 @@ export default function SignLanguageDetector() {
   const lastDetectedRef = useRef(""); // To store the last detected letter
   const handDetectedRef = useRef(false);
 
+  setSidebar(true);
   useEffect(() => {
     return () => {
       if (socketRef.current) {
@@ -69,7 +70,7 @@ export default function SignLanguageDetector() {
           lastDetectedRef.current = data; // Update last detected letter
         }
       });
-      
+
       socketRef.current.on("prediction_words", (data) => {
         if (data === "NEXT") {
           if (!handDetectedRef.current) {
@@ -137,17 +138,17 @@ export default function SignLanguageDetector() {
     if (!isCameraActive) return;
 
     console.log("inside 2")
-    
+
     startWebSocket();
     setIsDetecting(true);
 
     console.log("inside 2.1")
-    
+
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
 
     console.log("inside 2.2")
-    
+
     detectionInterval.current = setInterval(() => {
       console.log("inside 2.3")
       if (videoRef.current && socketRef.current) {
@@ -246,16 +247,17 @@ export default function SignLanguageDetector() {
           <p>{detectedTextAlphabets || "No prediction yet"}</p>
           <textarea
             value={responseTextAlphabets}
-            // onChange={(e) => setResponseTextAlphabets(e.target.value)} // Allow manual editing
+            onChange={(e) => setResponseTextAlphabets(e.target.value)} // Handle changes
             rows={5}
             cols={50}
             placeholder="Detected text will appear here..."
+            className="w-full px-4 py-3 bg-[#2a3353] text-white rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
             style={{
-              color: "black",
-              backgroundColor: "#f0f0f0",
               marginTop: "20px",
             }}
           />
+
+
           <br />
           <button
             onClick={isCameraActive ? handleStopCamera : handleCameraAccess}
@@ -314,17 +316,17 @@ export default function SignLanguageDetector() {
           />
           <p>{detectedTextWords || "No prediction yet"}</p>
           <textarea
-            value={responseTextWords}
-            // onChange={(e) => setResponseTextWords(e.target.value)} // Allow manual editing
-            rows={5}
-            cols={50}
-            placeholder="Detected text will appear here..."
-            style={{
-              color: "black",
-              backgroundColor: "#f0f0f0",
-              marginTop: "20px",
-            }}
-          />
+  value={responseTextWords}
+  onChange={(e) => setResponseTextWords(e.target.value)} // Allow manual editing
+  rows={5}
+  cols={50}
+  placeholder="Detected text will appear here..."
+  className="w-full px-4 py-3 bg-[#2a3353] text-white rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
+  style={{
+    marginTop: "20px",
+  }}
+/>
+
           <br />
           <button
             onClick={isCameraActive ? handleStopCamera : handleCameraAccess}
