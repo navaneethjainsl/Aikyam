@@ -26,13 +26,15 @@ function VoiceIcon({ isListening }) {
   );
 }
 
-export default function Chatbot() {
+export default function Chatbot( {setSidebar} ) {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
   const [interimTranscript, setInterimTranscript] = useState('');
   const chatContainerRef = useRef(null);
+
+  setSidebar(true);
 
   useEffect(() => {
     if (chatContainerRef.current) {

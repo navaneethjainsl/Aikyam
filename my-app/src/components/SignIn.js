@@ -7,12 +7,14 @@ import Cookies from 'js-cookie';  // Import js-cookie
 
 axios.defaults.withCredentials = true; // Ensure cookies are sent with requests
 
-export default function SignIn() {
+export default function SignIn( {setSidebar} ) {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+
+  setSidebar(false);
 
   // Handle input changes
   const handleChange = (e) => {

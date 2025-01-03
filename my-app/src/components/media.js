@@ -100,7 +100,7 @@ const AIAnimation = ({ className }) => {
   return <canvas ref={canvasRef} className={`w-full h-full ${className || ''}`} aria-hidden="true" />
 }
 
-export default function Multimedia() {
+export default function Multimedia( {setSidebar} ) {
   const [isVoiceAssistantOpen, setIsVoiceAssistantOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -111,6 +111,8 @@ export default function Multimedia() {
   const [activeTab, setActiveTab] = useState('news');
   const audioRef = useRef(null);
   const audioSrc = "/a1.mp3"; // Replace with your audio file path
+
+  setSidebar(true);
 
   const getCookie = (name) => {
     const value = `; ${document.cookie}`;
@@ -156,6 +158,7 @@ const fetchPodcasts = async () => {
         }
 
         const data = await response.json();
+        window.location.href(data.multimedia.podcasts.data.getPodcastSeries.rssUrl)
         setPodcastData(data.multimedia.podcasts); // Update state with podcasts
         setIsLoading(false);
     } catch (error) {

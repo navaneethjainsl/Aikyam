@@ -3,9 +3,9 @@ import { motion, useAnimation, Variants } from 'framer-motion';
 import AnimatedBubbles from '../components/AnimatedBubbles';
 import ErrorBoundary from '../components/ErrorBoundary';
 
-const letterVariants: Variants = {
+const letterVariants = {
   hidden: { opacity: 0, y: 50 },
-  visible: (i: number) => ({
+  visible: (i) => ({
     opacity: 1,
     y: 0,
     transition: {
@@ -17,7 +17,7 @@ const letterVariants: Variants = {
   }),
 };
 
-const LetterAnimation: React.FC<{ text: string }> = ({ text }) => {
+const LetterAnimation = ({ text }) => {
   return (
     <motion.h1 
       className="text-6xl md:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500"
@@ -38,8 +38,9 @@ const LetterAnimation: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-export default function LandingPage() {
+export default function LandingPage( {setSidebar} ) {
   const controls = useAnimation();
+  setSidebar(false);
 
   React.useEffect(() => {
     controls.start((i) => ({
@@ -51,7 +52,7 @@ export default function LandingPage() {
 
   return (
     <ErrorBoundary>
-      <div className=" min-h-screen overflow-hidden bg-gradient-to-br from-black via-purple-900 to-indigo-900">
+      <div className=" h-[94vh] overflow-hidden bg-gradient-to-br from-black via-purple-900 to-indigo-900">
         <AnimatedBubbles />
         <div className=" z-10">
           <div className="min-h-screen flex flex-col items-center justify-center px-4">
@@ -78,7 +79,7 @@ export default function LandingPage() {
               >
                 <a href="/signup" className="inline-block group">
                   <button className="px-8 py-4 bg-gradient-to-r from-purple-700 to-purple-600 text-white rounded-full font-medium text-lg transition-all duration-300 shadow-lg hover:shadow-pink-500/25 transform hover:-translate-y-1">
-                    <span className="mr-2">Embark on Your AI Journey</span>
+                    <span className="mr-2">Embark on Your Journey</span>
                     <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
                   </button>
                 </a>
@@ -93,9 +94,9 @@ export default function LandingPage() {
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
                 {[
-                  { title: "Speech Recognition", description: "Experience seamless communication with our advanced AI models" },
+                  { title: "Sign Language Detection", description: "Translate sign language gestures enhancing communication" },
                   { title: "Visual Assistance", description: "See the world through AI-enhanced perception and understanding" },
-                  { title: "Personalized Learning", description: "Grow with an AI companion that evolves alongside you" }
+                  { title: "Speech Recognition", description: "Experience seamless communication with our advanced AI models" },
                 ].map((feature, index) => (
                   <motion.div 
                     key={index}

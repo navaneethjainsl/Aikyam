@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Tesseract from 'tesseract.js';
 
-export default function AccessibilityTools() {
+export default function AccessibilityTools( {setSidebar} ) {
   const [image, setImage] = useState(null);
   const [extractedText, setExtractedText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -12,6 +12,8 @@ export default function AccessibilityTools() {
   const [recognition, setRecognition] = useState(null);
   const [isQuizEnabled, setIsQuizEnabled] = useState(false);
 
+  setSidebar(true);
+  
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {

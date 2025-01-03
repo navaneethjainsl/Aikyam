@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const AnimatedBubbles: React.FC = () => {
+const AnimatedBubbles = () => {
   const bubbles = Array.from({ length: 15 }, (_, i) => i);
 
   return (

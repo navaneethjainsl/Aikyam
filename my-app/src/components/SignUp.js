@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';  // Import js-cookie
 
 axios.defaults.withCredentials = true;
 
-export default function SignUp() {
+export default function SignUp( {setSidebar} ) {
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -16,6 +16,8 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  setSidebar(false);
 
   // Handle input changes
   const handleChange = (e) => {
