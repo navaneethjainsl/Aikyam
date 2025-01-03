@@ -10,6 +10,7 @@ export default function AccessibilityTools() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [recognition, setRecognition] = useState(null);
+  const [isQuizEnabled, setIsQuizEnabled] = useState(false);
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -116,6 +117,17 @@ export default function AccessibilityTools() {
     }
   };
 
+  const enableQuiz = () => {
+    if (isQuizEnabled) {
+      window.location.href = "http://localhost:8501/?routes=start_quiz"
+      setIsQuizEnabled(true);
+    }
+    else {
+      window.location.href = "http://localhost:8501/?routes=stop"
+      setIsQuizEnabled(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="p-6 rounded-xl bg-navy-800 backdrop-blur-xl border border-white/10">
@@ -198,8 +210,9 @@ export default function AccessibilityTools() {
 
         <button
           className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
+          onClick={enableQuiz}
         >
-          <h3 className="font-semibold text-sm">Interactive Learning</h3>
+          <h3 className="font-semibold text-sm">{isQuizEnabled ? "Stop" : "Interactive Learning"}</h3>
         </button>
       </div>
     </div>
