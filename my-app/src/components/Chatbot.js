@@ -1,22 +1,78 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, Send } from 'lucide-react';
-import axios from 'axios'; // Ensure Axios is imported
+import { Send } from 'lucide-react';
+import axios from 'axios';
+
+function VoiceIcon({ isListening }) {
+  return (
+    <div className={`relative w-6 h-6 rounded-full bg-black flex items-center justify-center ${isListening ? 'animate-pulse' : ''}`}>
+      <div className="flex items-center justify-center gap-[2px]">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className={`w-[2px] bg-white rounded-full transition-all duration-200 ${
+              isListening 
+                ? 'animate-soundwave' 
+                : 'h-2'
+            }`}
+            style={{
+              animationDelay: `${i * 0.1}s`
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Chatbot() {
-  const [message, setMessage] = useState(''); // Manages user input
-  const [chatHistory, setChatHistory] = useState([]); // Stores the entire chat history
+  const [message, setMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState([]);
+  const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState(null);
+  const [interimTranscript, setInterimTranscript] = useState('');
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
-    // Scroll to the bottom of chat history on update
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        let currentInterimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+            setMessage(finalTranscript.trim());
+            setInterimTranscript('');
+          } else {
+            currentInterimTranscript += transcript;
+          }
+        }
+        
+        setInterimTranscript(currentInterimTranscript);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        setInterimTranscript('');
+      };
+
+      setRecognition(recognition);
+    }
   }, [chatHistory]);
 
-  // Function to handle message sending
   const sendMessage = async () => {
     if (message.trim()) {
       const userMessage = {
@@ -25,7 +81,6 @@ export default function Chatbot() {
         sender: 'user',
       };
 
-      // Add user message to chat history
       setChatHistory((prev) => [...prev, userMessage]);
       setMessage('');
 
@@ -35,33 +90,27 @@ export default function Chatbot() {
         if (parts.length === 2) return parts.pop().split(';').shift();
         return null;
       };
-      const authToken = getCookie('authToken')
-      console.log(authToken)
+      const authToken = getCookie('authToken');
 
       try {
-        // Send the message to the backend using Axios with headers
         const response = await axios.get('http://localhost:5000/api/user/chatbot', {
           headers: {
-            // 'Accept': '*/*',
-            // 'User-Agent': 'React App',
-            'auth-token': authToken, // Replace with the actual token
+            'auth-token': authToken,
           },
           params: {
-            question: message, // Sending the user message as query parameter
+            question: message,
           },
         });
 
-        // Add bot's response to chat history
         const botResponse = {
           id: Date.now(),
-          text: response.data.message, // Server response
+          text: response.data.message,
           sender: 'bot',
         };
         setChatHistory((prev) => [...prev, botResponse]);
       } catch (error) {
         console.error('Error communicating with the chatbot API:', error);
 
-        // Add an error message to the chat history
         const errorMessage = {
           id: Date.now(),
           text: 'Sorry, something went wrong. Please try again later.',
@@ -72,11 +121,24 @@ export default function Chatbot() {
     }
   };
 
-
-  //Handles Enter key press
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       sendMessage();
+    }
+  };
+
+  const toggleListening = () => {
+    if (!recognition) {
+      alert('Speech recognition is not supported in your browser.');
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+    } else {
+      recognition.start();
+      setIsListening(true);
+      setMessage('');
     }
   };
 
@@ -91,34 +153,49 @@ export default function Chatbot() {
               chatHistory.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`p-3 rounded-lg ${msg.sender === 'user'
+                  className={`p-3 rounded-lg ${
+                    msg.sender === 'user'
                       ? 'bg-purple-600 ml-auto'
                       : 'bg-[#2a3353] mr-auto'
-                    } max-w-[70%]`}
+                  } max-w-[70%]`}
                 >
                   {msg.text}
                 </div>
               ))
             )}
           </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              className="flex-1 px-4 py-3 bg-[#2a3353] rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-            <button
-              onClick={sendMessage}
-              className="px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
-            >
-              <Send className="h-5 w-5" />
-            </button>
-            <button className="px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity">
-              <Mic className="h-5 w-5" />
-            </button>
+          <div className="flex flex-col gap-2">
+            {interimTranscript && (
+              <div className="text-sm text-gray-400 italic">
+                {interimTranscript}...
+              </div>
+            )}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                className="flex-1 px-4 py-3 bg-[#2a3353] rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <button
+                onClick={sendMessage}
+                className="px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
+              >
+                <Send className="h-5 w-5" />
+              </button>
+              <button 
+                onClick={toggleListening}
+                className={`p-3 rounded-xl hover:opacity-90 transition-all ${
+                  isListening 
+                    ? 'bg-purple-600' 
+                    : 'bg-gradient-to-r from-purple-600 to-purple-400'
+                }`}
+              >
+                <VoiceIcon isListening={isListening} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -137,3 +214,4 @@ export default function Chatbot() {
     </div>
   );
 }
+

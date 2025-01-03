@@ -1,78 +1,119 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Tesseract from 'tesseract.js';
 
 export default function AccessibilityTools() {
-  const [image, setImage] = useState(null); // State to hold the image URL
+  const [image, setImage] = useState(null);
   const [extractedText, setExtractedText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isUploaded, setIsUploaded] = useState(null);
-  const [isReading, setIsReading] = useState(false); // Track whether text is being read
+  const [isReading, setIsReading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [recognition, setRecognition] = useState(null);
 
-  // Handle image upload
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        setTranscript(finalTranscript);
+      };
+
+      setRecognition(recognition);
+    } else {
+      console.error('Speech recognition not supported');
+    }
+  }, []);
+
   const handleImageUpload = () => {
-    // const file = e.target.files[0];
     if (isUploaded) {
-      // const imageUrl = URL.createObjectURL(isUploaded); // Create URL for image preview
-      // setImage(imageUrl); // Store the image URL in state
       extractTextFromImage(isUploaded);
-    }
-    else{
-      alert("Upload the image to extract the text content")
-    }
-  };
-  const handleUpload = (e) => {
-    setIsUploaded(e.target.files[0]);
-    if (isUploaded) {
-      const imageUrl = URL.createObjectURL(isUploaded); // Create URL for image preview
-      setImage(imageUrl); // Store the image URL in state
-      // extractTextFromImage(isUploaded);
+    } else {
+      alert("Upload the image to extract the text content");
     }
   };
 
-  // Extract text from the uploaded image using Tesseract.js OCR
+  const handleUpload = (e) => {
+    const file = e.target.files[0];
+    setIsUploaded(file);
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);
+    }
+  };
+
   const extractTextFromImage = (file) => {
     setIsProcessing(true);
     Tesseract.recognize(
       file,
-      'eng', // language code (can be changed to other languages)
+      'eng',
       {
-        logger: (m) => console.log(m), // You can log the progress here if needed
+        logger: (m) => console.log(m),
       }
     )
       .then(({ data: { text } }) => {
-        setExtractedText(text); // Set the extracted text to state
-        setIsProcessing(false); // Stop processing
+        setExtractedText(text);
+        setIsProcessing(false);
       })
       .catch((err) => {
         console.error('Error during OCR:', err);
-        setIsProcessing(false); // Stop processing if there's an error
+        setIsProcessing(false);
       });
   };
 
-  // Function to trigger Text-to-Speech conversion
   const speakText = (text) => {
-    if (text === ""){
-      alert("Please Extract text first")
-    }
-    else{
+    if (text === "") {
+      alert("Please Extract text first");
+    } else {
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.voice = speechSynthesis.getVoices()[0];
-        utterance.rate = 1; // Adjust speech speed if needed
-        utterance.pitch = 1; // Adjust pitch if needed
-        utterance.volume = 1; // Max volume
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        utterance.volume = 1;
         speechSynthesis.speak(utterance);
-        setIsReading(true); // Set reading state to true
+        setIsReading(true);
       } else {
         alert("Your browser does not support text-to-speech.");
       }
     }
   };
 
-  // Function to stop the reading
   const stopReading = () => {
-    speechSynthesis.cancel(); // Cancel the ongoing speech
-    setIsReading(false); // Set reading state to false
+    speechSynthesis.cancel();
+    setIsReading(false);
+  };
+
+  const startListening = () => {
+    if (recognition) {
+      recognition.start();
+      setIsListening(true);
+    } else {
+      alert('Speech recognition is not supported in your browser.');
+    }
+  };
+
+  const stopListening = () => {
+    if (recognition) {
+      recognition.stop();
+      setIsListening(false);
+    }
   };
 
   return (
@@ -85,102 +126,83 @@ export default function AccessibilityTools() {
             className="flex-1 px-4 py-3 bg-navy-700 rounded-xl border border-white/10"
             onChange={handleUpload}
           />
-          {/* <button className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity">
-            Submit
-          </button> */}
         </div>
       </div>
 
-      {/* Display the uploaded image */}
       {image && (
         <div className="p-6 rounded-xl bg-navy-800 backdrop-blur-xl border border-white/10">
           <h3 className="font-semibold mb-4">Uploaded Image</h3>
-          <img src={image} alt="Uploaded" className="w-full rounded-xl" />
+          <img src={image} alt="Uploaded" className="w-32 h-32 object-cover rounded-xl" />
         </div>
       )}
 
-      {/* Display extracted text */}
       {extractedText && (
         <div className="p-6 rounded-xl bg-navy-800 backdrop-blur-xl border border-white/10">
           <h3 className="font-semibold mb-4">Extracted Text</h3>
-          <p>{extractedText}</p>
+          <p className="text-sm">{extractedText}</p>
         </div>
       )}
 
-      {/* Text-to-Speech Buttons */}
-      {/* {extractedText && !isReading && (
-        <button
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
-          onClick={() => speakText(extractedText)} // Trigger TTS when clicked
-        >
-          Read Text Aloud
-        </button>
+      {transcript && (
+        <div className="p-6 rounded-xl bg-navy-800 backdrop-blur-xl border border-white/10">
+          <h3 className="font-semibold mb-4">Transcribed Speech</h3>
+          <p className="text-sm">{transcript}</p>
+        </div>
       )}
 
-      {isReading && (
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <button
-          className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-400 rounded-xl hover:opacity-90 transition-opacity"
-          onClick={stopReading} // Stop TTS when clicked
-        >
-          Stop Reading
-        </button>
-      )} */}
-
-      {/* OCR Tool and Other Features */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* {[
-          'OCR Tool',
-          'Text-to-speech',
-          'Speech-to-Text',
-          'Frequency Compression',
-          'Interactive Learning',
-        ].map((tool) => ( */}
-        <button
-          key={'OCR Tool'}
           onClick={handleImageUpload}
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
+          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
         >
-          <h3 className="font-semibold">{'Extract Text - OCR'}</h3>
+          <h3 className="font-semibold text-sm">Extract Text - OCR</h3>
         </button>
-        {/* <button
-          key={'Text-to-speech'}
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
-        >
-          <h3 className="font-semibold">{'Text-to-speech'}</h3>
-        </button> */}
-        {/* Text-to-Speech Buttons */}
-        {!isReading && (
+
+        {!isReading ? (
           <button
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
-          onClick={() => speakText(extractedText)} // Trigger TTS when clicked
+            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
+            onClick={() => speakText(extractedText)}
           >
-            <h3 className="font-semibold">{'Text-to-speech'}</h3>
+            <h3 className="font-semibold text-sm">Text-to-speech</h3>
+          </button>
+        ) : (
+          <button
+            className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-400 rounded-xl hover:opacity-90 transition-opacity"
+            onClick={stopReading}
+          >
+            <h3 className="font-semibold text-sm">Stop Reading</h3>
           </button>
         )}
 
-        {isReading && (
+        {!isListening ? (
           <button
-          className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-400 rounded-xl hover:opacity-90 transition-opacity"
-          onClick={stopReading} // Stop TTS when clicked
+            onClick={startListening}
+            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
           >
-            <h3 className="font-semibold">{'Stop Reading'}</h3>
-            
+            <h3 className="font-semibold text-sm">Start Speech-to-Text</h3>
+          </button>
+        ) : (
+          <button
+            onClick={stopListening}
+            className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-400 rounded-xl hover:opacity-90 transition-opacity"
+          >
+            <h3 className="font-semibold text-sm">Stop Speech-to-Text</h3>
           </button>
         )}
-        <button
-          key={'Speech-to-Text'}
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
+
+        {/* <button
+          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
         >
-          <h3 className="font-semibold">{'Speech-to-Text'}</h3>
-        </button>
+          <h3 className="font-semibold text-sm">Frequency Compression</h3>
+        </button> */}
+
         <button
-          key={'Interactive Learning'}
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
+          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity"
         >
-          <h3 className="font-semibold">{'Interactive Learning'}</h3>
+          <h3 className="font-semibold text-sm">Interactive Learning</h3>
         </button>
-        {/* ))} */}
       </div>
     </div>
   );
 }
+

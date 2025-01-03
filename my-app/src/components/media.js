@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { PlayCircle, PauseCircle, Rewind, FastForward } from 'lucide-react';
 import { X } from 'lucide-react'
 import AIMotionIcon from './AiMotionIcon'
-import axios from 'axios';
 
 const AIAnimation = ({ className }) => {
   const canvasRef = useRef(null)
@@ -104,32 +103,69 @@ const AIAnimation = ({ className }) => {
 export default function Multimedia() {
   const [isVoiceAssistantOpen, setIsVoiceAssistantOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [backendData, setBackendData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [newsData, setNewsData] = useState([]);
+  const [podcastData, setPodcastData] = useState([]);
+  const [activeTab, setActiveTab] = useState('news');
   const audioRef = useRef(null);
   const audioSrc = "/a1.mp3"; // Replace with your audio file path
 
-  useEffect(() => {
-    const fetchBackendData = async () => {
-      try {
-        const response = await fetch("/multimedia"); // Replace with your API endpoint
-        if (!response.ok) {
-          console.error(`HTTP error! status: ${response.status}`);
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setBackendData(data);
-        console.log("Fetched backend data:", data); // Log fetched data
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  };
+  
+  const authToken = getCookie('authToken');
+  const fetchNews = async () => {
+    try {
+        const response = await fetch("http://localhost:5000/api/user/news", {
+            method: "GET",
+            headers: {
+                'auth-token': authToken,
+            }
+        });
 
-    fetchBackendData();
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setNewsData(data.multimedia.articles); // Update state with articles
+        setIsLoading(false);
+    } catch (error) {
+        console.error("Error fetching news:", error);
+        setIsLoading(false);
+    }
+};
+
+const fetchPodcasts = async () => {
+    try {
+        const response = await fetch("http://localhost:5000/api/user/podcast", {
+            method: "GET",
+            headers: {
+               'auth-token': authToken, 
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setPodcastData(data.multimedia.podcasts); // Update state with podcasts
+        setIsLoading(false);
+    } catch (error) {
+        console.error("Error fetching podcasts:", error);
+        setIsLoading(false);
+    }
+};
+
+  useEffect(() => {
+    fetchNews();
   }, []);
 
   useEffect(() => {
@@ -205,15 +241,37 @@ export default function Multimedia() {
           <audio ref={audioRef} src={audioSrc} />
         </div>
       </div>
+      <div className="flex justify-center gap-4 mt-6">
+        <button
+          onClick={() => { setActiveTab('news'); fetchNews(); }}
+          className={`px-4 py-2 rounded-md ${activeTab === 'news' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+        >
+          News
+        </button>
+        <button
+          onClick={() => { setActiveTab('podcast'); fetchPodcasts(); }}
+          className={`px-4 py-2 rounded-md ${activeTab === 'podcast' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+        >
+          Podcasts
+        </button>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {isLoading ? (
           <div className="col-span-full text-center">Loading...</div>
-        ) : backendData.length > 0 ? (
-          backendData.map((item, index) => (
+        ) : activeTab === 'news' && newsData.length > 0 ? (
+          newsData.map((item, index) => (
             <div key={index} className="bg-gray-800 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+              <h3 className="text-lg font-semibold mb-2">{item.title[0]}</h3>
               <p className="text-gray-400 mb-2">{item.description}</p>
               <a href={item.url} className="text-purple-400 hover:underline inline-block">Read more</a>
+            </div>
+          ))
+        ) : activeTab === 'podcast' && podcastData.length > 0 ? (
+          podcastData.map((item, index) => (
+            <div key={index} className="bg-gray-800 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-2">{item.title[0]}</h3>
+              <p className="text-gray-400 mb-2">{item.description}</p>
+              <a href={item.url} className="text-purple-400 hover:underline inline-block">Listen</a>
             </div>
           ))
         ) : (

@@ -436,7 +436,7 @@ router.get('/podcast', fetchuser, async (req, res) => {
           const query = "Sensory Disabled";
         
         const podcasts = await fetchPodcasts(query);
-        //console.log(podcasts)
+        console.log(podcasts)
         res.status(200).json({
             success: true,
            multimedia: {
