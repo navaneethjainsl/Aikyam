@@ -7,7 +7,6 @@ import Chatbot from './components/Chatbot.js';
 import Multimedia from './components/media';
 import AccessibilityTools from './components/accessibility';
 import JobsAndSchemes from './components/JobsSchemes';
-import './index.css'
 import Profile from './components/Profile';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
@@ -18,7 +17,8 @@ import AIAnimation from './components/AIAnimation'; // Assuming AIAnimation is a
 import AIMotionIcon from './components/AiMotionIcon'; // Assuming AIMotionIcon is a separate component
 
 
-function Sidebar({ activeSection, setActiveSection }) {
+
+function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -65,14 +65,6 @@ function Sidebar({ activeSection, setActiveSection }) {
         </ul>
       </nav>
       <div className="mt-auto">
-        {/* <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full pl-10 pr-4 py-2 bg-[#1c2444] rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        </div> */}
         <div className="flex items-center justify-between mt-4">
           {/* <button className="p-2 hover:bg-[#1c2444] rounded-lg">
             <Bell className="h-5 w-5" />
@@ -112,7 +104,7 @@ export default function App() {
   return (
     <Router>
       <div className="flex h-screen bg-[#0f1535] text-white">
-        <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+        <Sidebar />
         <main className="flex-1 overflow-auto p-8">
           {/* Floating button to toggle Voice Assistant */}
           <button
