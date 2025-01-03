@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link,useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import { Bell, Camera, MessageSquare, PlayCircle, Settings, User, Wrench, Briefcase, Search } from 'lucide-react';
 import SignLanguageDetector from './components/signLanguage';
 import Chatbot from './components/Chatbot.js';
@@ -10,6 +10,12 @@ import './index.css'
 import Profile from './components/Profile';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
+import { Mic, X } from 'lucide-react'; // Import necessary icons
+import VoiceAssistantModal from './components/VoiceAssistantModal.js';
+import AIAnimation from './components/AIAnimation'; // Assuming AIAnimation is a separate component in components folder
+// import AIMotionIcon from './AiMotionIcon'
+import AIMotionIcon from './components/AiMotionIcon'; // Assuming AIMotionIcon is a separate component
+
 
 function Sidebar({ activeSection, setActiveSection }) {
   const navigate = useNavigate();
@@ -22,7 +28,7 @@ function Sidebar({ activeSection, setActiveSection }) {
     { icon: Briefcase, label: 'Jobs & Schemes', key: 'jobsAndSchemes' },
     { icon: User, label: 'Profile', key: 'profile' },
   ];
-  
+
   return (
     <aside className="w-64 bg-[#0f1535] border-r border-white/10 p-4 flex flex-col">
       <div className="mb-8">
@@ -36,11 +42,10 @@ function Sidebar({ activeSection, setActiveSection }) {
             <li key={item.key}>
               <Link
                 to={`/${item.key}`}
-                className={`flex items-center py-2 px-4 rounded-lg transition-colors ${
-                  activeSection === item.key
+                className={`flex items-center py-2 px-4 rounded-lg transition-colors ${activeSection === item.key
                     ? 'bg-[#1c2444] text-purple-400'
                     : 'text-gray-300 hover:bg-[#1c2444]'
-                }`}
+                  }`}
                 onClick={() => setActiveSection(item.key)}
               >
                 <item.icon className="mr-3 h-5 w-5" />
@@ -66,14 +71,14 @@ function Sidebar({ activeSection, setActiveSection }) {
           <button className="p-2 hover:bg-[#1c2444] rounded-lg">
             <Settings className="h-5 w-5" />
           </button> */}
-          <button 
+          <button
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-lg hover:opacity-90 transition-colors"
             onClick={() => navigate('/signup')}
           >
             <User className="h-3 w-3" />
             Sign Up
           </button>
-          <button 
+          <button
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-400 rounded-lg hover:opacity-90 transition-colors"
             onClick={() => navigate('/signin')}
           >
@@ -88,12 +93,33 @@ function Sidebar({ activeSection, setActiveSection }) {
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('signLanguage');
+  const [isVoiceAssistantOpen, setIsVoiceAssistantOpen] = useState(false);
 
+  const toggleVoiceAssistant = () => {
+    setIsVoiceAssistantOpen((prev) => !prev);
+  };
   return (
     <Router>
       <div className="flex h-screen bg-[#0f1535] text-white">
         <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
         <main className="flex-1 overflow-auto p-8">
+          {/* Floating button to toggle Voice Assistant */}
+          <button
+            onClick={() => setIsVoiceAssistantOpen(true)}
+            className="fixed bottom-4 right-4 w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full shadow-lg overflow-hidden hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+            aria-label="Open Voice Assistant"
+          >
+            <div className="absolute inset-0">
+              <AIAnimation className="opacity-30" />
+            </div>
+            <AIMotionIcon className="h-8 w-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white z-10" />
+          </button>
+
+          {/* Voice Assistant Modal */}
+          <VoiceAssistantModal
+            isOpen={isVoiceAssistantOpen}
+            onClose={() => setIsVoiceAssistantOpen(false)}
+          />
           <Routes>
             <Route path="/signLanguage" element={<SignLanguageDetector />} />
             <Route path="/chatbot" element={<Chatbot />} />

@@ -206,16 +206,16 @@ export default function Profile() {
       </div> */}
 
       {/* Voice Assistant Button */}
-      <button
+      {/* <button
         onClick={() => setIsVoiceAssistantOpen(true)}
         className="fixed bottom-4 right-4 w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full shadow-lg overflow-hidden hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
         aria-label="Open Voice Assistant"
-      >
-        <div className="absolute inset-0">
+      > */}
+        {/* <div className="absolute inset-0">
           <AIAnimation className="opacity-30" />
         </div>
         <AIMotionIcon className="h-8 w-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white z-10" />
-      </button>
+      </button> */}
 
       {/* Voice Assistant Modal */}
       {/* {isVoiceAssistantOpen && (
