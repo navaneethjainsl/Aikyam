@@ -173,7 +173,7 @@ import { Mic, X } from 'lucide-react'; // Import necessary icons
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const VoiceAssistantModal = ({ isOpen, onClose }) => {
+const VoiceAssistantModal = ({ isOpen, onClose, isListen }) => {
   const [isListening, setIsListening] = useState(false);
   const [query, setQuery] = useState('');
   const [isRequestInProgress, setIsRequestInProgress] = useState(false); // Flag to prevent multiple requests
@@ -186,6 +186,7 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
       alert('Sorry, your browser does not support Speech Recognition or Speech Synthesis.');
       return;
     }
+   
 
     const recognition = new window.webkitSpeechRecognition();
     recognition.lang = 'en-US';
@@ -210,6 +211,14 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
     recognitionRef.current = recognition;
   }, []);
 
+  useEffect(() => {
+    if (isOpen && recognitionRef.current && !isListening) {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  }, [isOpen]);
+
+  
   const getCookie = (name) => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
