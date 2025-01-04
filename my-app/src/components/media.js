@@ -264,7 +264,7 @@ const fetchPodcasts = async () => {
         ) : activeTab === 'news' && newsData.length > 0 ? (
           newsData.map((item, index) => (
             <div key={index} className="bg-gray-800 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">{item.title[0]}</h3>
+              <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
               <p className="text-gray-400 mb-2">{item.description}</p>
               <a href={item.url} className="text-purple-400 hover:underline inline-block">Read more</a>
             </div>
@@ -281,7 +281,7 @@ const fetchPodcasts = async () => {
           <div className="col-span-full text-center">No data available</div>
         )}
       </div>
-      <button
+      {/* <button
         onClick={() => setIsVoiceAssistantOpen(true)}
         className="fixed bottom-4 right-4 w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full shadow-lg overflow-hidden hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
         aria-label="Open Voice Assistant"
@@ -290,7 +290,7 @@ const fetchPodcasts = async () => {
           <AIAnimation className="opacity-30" />
         </div>
         <AIMotionIcon className="h-8 w-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white z-10" />
-      </button>
+      </button> */}
 
       {isVoiceAssistantOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

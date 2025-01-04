@@ -280,7 +280,7 @@ export default function Profile( {setSidebar} ) {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [aboutMe, setAboutMe] = useState('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum.');
+  const [aboutMe, setAboutMe] = useState('Write about yourself');
   const aboutMeInputRef = useRef(null);
   setSidebar(true);
   const getCookie = (name) => {

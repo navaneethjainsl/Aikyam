@@ -95,7 +95,7 @@ export default function LandingPage( {setSidebar} ) {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
                 {[
                   { title: "Sign Language Detection", description: "Translate sign language gestures enhancing communication" },
-                  { title: "Visual Assistance", description: "See the world through AI-enhanced perception and understanding" },
+                  { title: "Virtual Assistance", description: "See the world through AI-enhanced perception and understanding" },
                   { title: "Speech Recognition", description: "Experience seamless communication with our advanced AI models" },
                 ].map((feature, index) => (
                   <motion.div 
