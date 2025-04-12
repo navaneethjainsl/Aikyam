@@ -409,10 +409,10 @@ def stop():
 # st.sidebar.title("Navigation")
 # route = st.sidebar.radio("Go to", ["Home", "About", "Contact"])
 
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
 print(query_params)
-print(query_params["routes"])
-route = query_params["routes"][0]
+# print(query_params["routes"])
+route =  query_params.get("routes", ["/"])
 print(route)
 
 # Render the selected page

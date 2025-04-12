@@ -85,7 +85,7 @@ router.get('/voice/assistant', async (req, res) => {
     res.status(200).json({ success: true, message: text })
 });
 
-// // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/signup'
+// // Sign Language Detection Tab: POST 'http://localhost:5000/api/user/recognize'
 // router.post('/recognize', fetchuser, async (req, res) => {
 //     try {
 

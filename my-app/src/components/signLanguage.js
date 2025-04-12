@@ -1,25 +1,33 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Camera, Copy, Volume2, Play, Pause } from "lucide-react";
 import io from "socket.io-client";
 
-export default function SignLanguageDetector( {setSidebar} ) {
+export default function SignLanguageDetector({ setSidebar }) {
   const [isDetecting, setIsDetecting] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
-  const [responseTextAlphabets, setResponseTextAlphabets] = useState(""); // For Alphabets
-  const [responseTextWords, setResponseTextWords] = useState(""); // For Words
-  const [detectedTextAlphabets, setDetectedTextAlphabets] = useState(""); // For Alphabets
-  const [detectedTextWords, setDetectedTextWords] = useState(""); // For Words
-  const [mode, setMode] = useState(null); // To track whether user selects Alphabets or Words
+  const [responseTextAlphabets, setResponseTextAlphabets] = useState(""); 
+  const [responseTextWords, setResponseTextWords] = useState(""); 
+  const [detectedTextAlphabets, setDetectedTextAlphabets] = useState(""); 
+  const [detectedTextWords, setDetectedTextWords] = useState(""); 
+  const [mode, setMode] = useState("alphabets"); 
+  const [instructionsVisible, setInstructionsVisible] = useState(true);
   const detectionInterval = useRef(null);
   const videoRef = useRef(null);
   const socketRef = useRef(null);
-  const lastDetectedRef = useRef(""); // To store the last detected letter
+  const lastDetectedRef = useRef(""); 
   const handDetectedRef = useRef(false);
 
   setSidebar(true);
+  
   useEffect(() => {
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
+      }
+      // Stop the camera if still running on unmount
+      if (videoRef.current?.srcObject) {
+        const stream = videoRef.current.srcObject;
+        stream.getTracks().forEach((track) => track.stop());
       }
     };
   }, []);
@@ -28,6 +36,8 @@ export default function SignLanguageDetector( {setSidebar} ) {
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((stream) => {
+        // Because the video element is always rendered,
+        // videoRef.current will not be null.
         videoRef.current.srcObject = stream;
         videoRef.current.play();
         setIsCameraActive(true);
@@ -67,7 +77,7 @@ export default function SignLanguageDetector( {setSidebar} ) {
         } else {
           handDetectedRef.current = false;
           setDetectedTextAlphabets(data);
-          lastDetectedRef.current = data; // Update last detected letter
+          lastDetectedRef.current = data; 
         }
       });
 
@@ -77,7 +87,6 @@ export default function SignLanguageDetector( {setSidebar} ) {
             handDetectedRef.current = true;
             setDetectedTextWords("NEXT");
             if (lastDetectedRef.current) {
-              // setResponseTextAlphabets((prev) => `${prev}${lastDetectedRef.current}`);
               setResponseTextWords((prev) => `${prev}${lastDetectedRef.current}`);
             }
           }
@@ -86,14 +95,13 @@ export default function SignLanguageDetector( {setSidebar} ) {
             handDetectedRef.current = true;
             setDetectedTextWords("No hand detected");
             if (lastDetectedRef.current) {
-              // setResponseTextAlphabets((prev) => `${prev}${lastDetectedRef.current}`);
               setResponseTextWords((prev) => `${prev} ${lastDetectedRef.current}`);
             }
           }
         } else {
           handDetectedRef.current = false;
           setDetectedTextWords(data);
-          lastDetectedRef.current = data; // Update last detected letter
+          lastDetectedRef.current = data;
         }
       });
     }
@@ -123,10 +131,11 @@ export default function SignLanguageDetector( {setSidebar} ) {
         canvas.height = video.videoHeight;
 
         // Flip the image horizontally
+        context.save(); // Save the current state
         context.translate(canvas.width, 0);
         context.scale(-1, 1);
-
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        context.restore(); // Restore to original state
 
         const frameData = canvas.toDataURL("image/jpeg");
         socketRef.current.emit("video_frame", frameData);
@@ -137,20 +146,13 @@ export default function SignLanguageDetector( {setSidebar} ) {
   const handleStartDetection2 = () => {
     if (!isCameraActive) return;
 
-    console.log("inside 2")
-
     startWebSocket();
     setIsDetecting(true);
-
-    console.log("inside 2.1")
 
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
 
-    console.log("inside 2.2")
-
     detectionInterval.current = setInterval(() => {
-      console.log("inside 2.3")
       if (videoRef.current && socketRef.current) {
         const video = videoRef.current;
 
@@ -158,15 +160,16 @@ export default function SignLanguageDetector( {setSidebar} ) {
         canvas.height = video.videoHeight;
 
         // Flip the image horizontally
+        context.save();
         context.translate(canvas.width, 0);
         context.scale(-1, 1);
-
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        context.restore();
 
         const frameData = canvas.toDataURL("image/jpeg");
         socketRef.current.emit("video_frame2", frameData);
       }
-    }, 700); // Send frames every 700ms
+    }, 700);
   };
 
   const handleStopDetection = () => {
@@ -179,185 +182,206 @@ export default function SignLanguageDetector( {setSidebar} ) {
 
   const handleModeChange = (selectedMode) => {
     setMode(selectedMode);
+    handleStopDetection();
+  };
+
+  const copyToClipboard = () => {
+    const text = mode === "alphabets" ? responseTextAlphabets : responseTextWords;
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        console.log("Text copied to clipboard");
+      })
+      .catch(err => {
+        console.error("Could not copy text: ", err);
+      });
+  };
+
+  const speakText = () => {
+    const text = mode === "alphabets" ? responseTextAlphabets : responseTextWords;
+    if ('speechSynthesis' in window && text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
+    }
   };
 
   return (
-    <div className="container" style={{ textAlign: "center", padding: "20px" }}>
-      {/* Display Sign Language Detection header */}
-      <h1 style={{ fontSize: "48px", marginBottom: "40px" }}>
-        {mode === "alphabets" ? "DETECT ALPHABETS" : mode === "words" ? "DETECT WORDS" : "SIGN LANGUAGE DETECTION"}
-      </h1>
-
-      {/* Show buttons for Alphabets and Words */}
-      {!mode && (
-        <div className="button-container" style={{ display: "flex", justifyContent: "center", gap: "30px" }}>
-          <button
-            onClick={() => handleModeChange("alphabets")}
-            className="mode-button"
-            style={{
-              backgroundColor: "#9333ea",
-              color: "white",
-              padding: "20px 40px",
-              fontSize: "24px",
-              borderRadius: "8px",
-            }}
-          >
-            Alphabets
-          </button>
-          <button
-            onClick={() => handleModeChange("words")}
-            className="mode-button"
-            style={{
-              backgroundColor: "#9333ea",
-              color: "white",
-              padding: "20px 40px",
-              fontSize: "24px",
-              borderRadius: "8px",
-            }}
-          >
-            Words
-          </button>
+    <div className="min-h-screen bg-dark-blue text-white">
+      <div className="container mx-auto max-w-7xl px-4 py-8">
+        <div className="text-center mb-6">
+          <h1 className="text-4xl font-bold mb-4 text-white">
+            {mode === "alphabets" ? "DETECT ALPHABETS" : mode === "words" ? "DETECT WORDS" : "SIGN LANGUAGE DETECTION"}
+          </h1>
+          <p className="text-gray-400 max-w-3xl mx-auto">
+            Our advanced sign language detection converts signs to text and speech in real-time, helping bridge communication gaps.
+          </p>
         </div>
-      )}
 
-      {/* Display camera access and detection buttons only if Alphabets mode is selected */}
-      {mode === "alphabets" && (
-        <div>
-          <button
-            onClick={() => setMode(null)}
-            style={{
-              backgroundColor: "#9333ea",
-              color: "white",
-              padding: "10px 20px",
-              fontSize: "18px",
-              borderRadius: "8px",
-              marginBottom: "20px",
-            }}
-          >
-            &larr; Back
-          </button>
+        {!mode && (
+          <div className="flex justify-center gap-6 mb-10 mt-12">
+            <button
+              onClick={() => handleModeChange("alphabets")}
+              className="bg-aikyam-purple text-white px-8 py-4 rounded-xl text-xl font-semibold hover:opacity-90 transition-opacity"
+            >
+              Alphabets
+            </button>
+            <button
+              onClick={() => handleModeChange("words")}
+              className="bg-aikyam-purple text-white px-8 py-4 rounded-xl text-xl font-semibold hover:opacity-90 transition-opacity"
+            >
+              Words
+            </button>
+          </div>
+        )}
 
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            className="video-preview"
-            style={{ width: "100%", transform: "scaleX(-1)" }} // Flip the video horizontally
-          />
-          <p>{detectedTextAlphabets || "No prediction yet"}</p>
-          <textarea
-            value={responseTextAlphabets}
-            onChange={(e) => setResponseTextAlphabets(e.target.value)} // Handle changes
-            rows={5}
-            cols={50}
-            placeholder="Detected text will appear here..."
-            className="w-full px-4 py-3 bg-[#2a3353] text-white rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            style={{
-              marginTop: "20px",
-            }}
-          />
+        {mode && (
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex rounded-md overflow-hidden border border-gray-700">
+              <button
+                onClick={() => handleModeChange("alphabets")}
+                className={`px-8 py-2 text-sm font-medium ${mode === "alphabets" ? "bg-aikyam-purple text-white" : "bg-gray-800 text-gray-300"}`}
+              >
+                Alphabet Signs
+              </button>
+              <button
+                onClick={() => handleModeChange("words")}
+                className={`px-8 py-2 text-sm font-medium ${mode === "words" ? "bg-aikyam-purple text-white" : "bg-gray-800 text-gray-300"}`}
+              >
+                Word Signs
+              </button>
+            </div>
+          </div>
+        )}
 
+        {mode && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left side: Camera feed */}
+            <div className="bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-700">
+              <div className="relative bg-gray-900 aspect-video">
+                {/* Always render the video element */}
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  muted
+                  className={`w-full h-full object-cover transform scaleX(-1) ${!isCameraActive && "hidden"}`}
+                />
+                {!isCameraActive && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                    <div className="flex justify-center mb-2">
+                      <Camera size={48} className="text-gray-500" />
+                    </div>
+                    <p className="text-gray-400 mb-4">Camera is currently turned off</p>
+                    <button
+                      onClick={handleCameraAccess}
+                      className="bg-aikyam-purple text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity"
+                    >
+                      Turn On Camera
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-center space-x-2 p-3 bg-gray-800">
+                <button
+                  onClick={isCameraActive ? handleStopCamera : handleCameraAccess}
+                  className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors"
+                  title={isCameraActive ? "Stop Camera" : "Start Camera"}
+                >
+                  <Camera size={20} className="text-gray-300" />
+                </button>
+                <button
+                  onClick={
+                    isDetecting 
+                      ? handleStopDetection 
+                      : mode === "alphabets" 
+                        ? handleStartDetection 
+                        : handleStartDetection2
+                  }
+                  disabled={!isCameraActive}
+                  className={`p-2 rounded-full ${
+                    !isCameraActive 
+                      ? 'bg-gray-700 cursor-not-allowed opacity-50' 
+                      : isDetecting 
+                        ? 'bg-red-500 hover:bg-red-600' 
+                        : 'bg-aikyam-purple hover:opacity-90'
+                  } transition-colors`}
+                  title={isDetecting ? "Stop Detection" : "Start Detection"}
+                >
+                  {isDetecting ? (
+                    <Pause size={20} className="text-white" />
+                  ) : (
+                    <Play size={20} className="text-white" />
+                  )}
+                </button>
+              </div>
+            </div>
 
-          <br />
-          <button
-            onClick={isCameraActive ? handleStopCamera : handleCameraAccess}
-            style={{
-              backgroundColor: "#9333ea",
-              color: "white",
-              padding: "15px 30px",
-              fontSize: "20px",
-              marginTop: "20px",
-              borderRadius: "8px",
-            }}
-          >
-            {isCameraActive ? "Stop Camera" : "Access Camera"}
-          </button>
-          <br />
-          <button
-            onClick={isDetecting ? handleStopDetection : handleStartDetection}
-            disabled={!isCameraActive}
-            style={{
-              backgroundColor: "#9333ea",
-              color: "white",
-              padding: "15px 30px",
-              fontSize: "20px",
-              marginTop: "20px",
-              borderRadius: "8px",
-            }}
-          >
-            {isDetecting ? "Stop Detection" : "Start Detection"}
-          </button>
-        </div>
-      )}
+            {/* Right side: Detection results */}
+            <div className="space-y-6">
+              {/* Detected Text */}
+              <div className="bg-gray-800 rounded-xl shadow-md p-5 border border-gray-700">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold text-white">Detected Text</h2>
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={copyToClipboard}
+                      className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors"
+                      title="Copy to clipboard"
+                    >
+                      <Copy size={18} className="text-gray-300" />
+                    </button>
+                    <button 
+                      onClick={speakText}
+                      className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors"
+                      title="Read aloud"
+                    >
+                      <Volume2 size={18} className="text-gray-300" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="min-h-32 bg-gray-900 rounded-lg p-4">
+                  {!isCameraActive ? (
+                    <p className="text-center text-gray-500 py-10">Turn on the camera to begin</p>
+                  ) : !isDetecting ? (
+                    <p className="text-center text-gray-500 py-10">Press the play button to start detection</p>
+                  ) : (
+                    <>
+                      <p className="mb-2 text-sm text-gray-400">
+                        Current: <span className="font-medium text-aikyam-purple">{mode === "alphabets" ? detectedTextAlphabets : detectedTextWords}</span>
+                      </p>
+                      <div className="bg-gray-800 border border-gray-700 rounded p-3 min-h-16 text-white">
+                        {mode === "alphabets" ? responseTextAlphabets : responseTextWords}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
 
-      {/* Display camera access and detection buttons only if Words mode is selected */}
-      {mode === "words" && (
-        <div>
-          <button
-            onClick={() => setMode(null)}
-            style={{
-              backgroundColor: "#9333ea",
-              color: "white",
-              padding: "10px 20px",
-              fontSize: "18px",
-              borderRadius: "8px",
-              marginBottom: "20px",
-            }}
-          >
-            &larr; Back
-          </button>
-
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            className="video-preview"
-            style={{ width: "100%", transform: "scaleX(-1)" }} // Flip the video horizontally
-          />
-          <p>{detectedTextWords || "No prediction yet"}</p>
-          <textarea
-  value={responseTextWords}
-  onChange={(e) => setResponseTextWords(e.target.value)} // Allow manual editing
-  rows={5}
-  cols={50}
-  placeholder="Detected text will appear here..."
-  className="w-full px-4 py-3 bg-[#2a3353] text-white rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
-  style={{
-    marginTop: "20px",
-  }}
-/>
-
-          <br />
-          <button
-            onClick={isCameraActive ? handleStopCamera : handleCameraAccess}
-            style={{
-              backgroundColor: "#9333ea",
-              color: "white",
-              padding: "15px 30px",
-              fontSize: "20px",
-              marginTop: "20px",
-              borderRadius: "8px",
-            }}
-          >
-            {isCameraActive ? "Stop Camera" : "Access Camera"}
-          </button>
-          <br />
-          <button
-            onClick={isDetecting ? handleStopDetection : handleStartDetection2}
-            disabled={!isCameraActive}
-            style={{
-              backgroundColor: "#9333ea",
-              color: "white",
-              padding: "15px 30px",
-              fontSize: "20px",
-              marginTop: "20px",
-              borderRadius: "8px",
-            }}
-          >
-            {isDetecting ? "Stop Detection" : "Start Detection"}
-          </button>
-        </div>
-      )}
+              {/* Instructions */}
+              <div className="bg-gray-800 rounded-xl shadow-md p-5 border border-gray-700">
+                <h2 className="text-xl font-semibold mb-4 text-white">Instructions</h2>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 w-6 h-6 bg-aikyam-purple/20 text-aikyam-purple rounded-full flex items-center justify-center text-sm font-medium mr-2">1</span>
+                    <span className="text-gray-300">Position yourself in front of the camera with good lighting</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 w-6 h-6 bg-aikyam-purple/20 text-aikyam-purple rounded-full flex items-center justify-center text-sm font-medium mr-2">2</span>
+                    <span className="text-gray-300">Ensure your hands are clearly visible within the frame</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 w-6 h-6 bg-aikyam-purple/20 text-aikyam-purple rounded-full flex items-center justify-center text-sm font-medium mr-2">3</span>
+                    <span className="text-gray-300">Make sign gestures slowly and clearly for best results</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 w-6 h-6 bg-aikyam-purple/20 text-aikyam-purple rounded-full flex items-center justify-center text-sm font-medium mr-2">4</span>
+                    <span className="text-gray-300">Keep a neutral background to improve detection accuracy</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
