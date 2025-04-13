@@ -167,19 +167,31 @@ router.get('/schemes', fetchuser, async (req, res) => {
     try {
         const schemes = [
             {
-              title: "Skill India",
-              organization: "Government of India",
-              eligibility: "18-35 years old",
-              benefits: "Free training, Certification",
-              description: "Enhance your skills with government-sponsored training programs in various sectors to improve employability."
+                id: 1,
+                title: "Assistance to Disabled Persons for Purchase/Fitting of Aids and Appliances (ADIP)",
+                organization: "Ministry of Social Justice and Empowerment",
+                provider: "Ministry of Social Justice and Empowerment",
+                category: "Equipment Support",
+                eligibility: "Persons with 40% disability and below monthly income of ₹20,000",
+                benefits: "Financial assistance for assistive devices",
+                description: "Up to 100% cost covered based on income criteria",
+                link: "#",
+                tags: ["Featured", "Equipment Support"],
+                deadline: "Ongoing"
             },
             {
-              title: "Startup India",
-              organization: "Ministry of Commerce and Industry",
-              eligibility: "Innovative business ideas",
-              benefits: "Funding, Mentorship, Tax benefits",
-              description: "Get support for your startup through this initiative aimed at fostering entrepreneurship and innovation."
-            },
+                id: 2,
+                title: "Scholarship for Students with Disabilities",
+                organization: "Department of Empowerment of Persons with Disabilities",
+                provider: "Department of Empowerment of Persons with Disabilities",
+                category: "Education",
+                eligibility: "Students with disabilities pursuing higher education",
+                benefits: "Financial support for education expenses",
+                description: "Monthly stipend and annual grants for educational materials",
+                link: "#",
+                tags: ["Education", "Financial Aid"],
+                deadline: "October 31, 2025"
+            }
         ]
         res.status(200).json({ success: true, message: schemes })
     }
@@ -194,143 +206,203 @@ router.get('/jobs', fetchuser, async (req, res) => {
     try {
         const jobs = [
             {
+                id: 1,
                 title: "Assistant Manager - Milk Plant",
                 company: "Divyang Career",
                 location: "Pune",
                 type: "Full-time",
                 salary: "₹35,000 - ₹50,000/month",
                 description: "Oversee the operations of the milk plant and ensure efficiency in production and distribution.",
-                link: "https://divyangcareer.com/jobs/physical-disability/assistant-manager-milk-plant/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/physical-disability/assistant-manager-milk-plant/",
+                category: "Administrative",
+                tags: ["Featured", "Full-time", "Administrative"],
+                postedDate: "3 days ago"
+            },
+            {
+                id: 2,
                 title: "Package Job",
                 company: "Speech and Language Disability Careers",
                 location: "Bangalore",
                 type: "Contract",
                 salary: "₹25,000/month",
                 description: "Pack and organize products as per the requirements. No prior experience required.",
-                link: "https://divyangcareer.com/jobs/speech-and-language-disability/package-job/"
-              },
-              {
-                title: "Data Entry Operator",
-                company: "Divyang Career",
-                location: "Mumbai",
-                type: "Full-time",
-                salary: "₹12,000 - ₹18,000/month",
-                description: "Perform accurate data entry tasks. Basic computer knowledge required.",
-                link: "https://divyangcareer.com/jobs/physical-disability/data-entry-operator-2/"
-              },
-              {
-                title: "Customer Care Executive",
-                company: "Divyang Career",
-                location: "Delhi",
-                type: "Full-time",
-                salary: "₹20,000 - ₹30,000/month",
-                description: "Provide support to customers by addressing queries and resolving issues.",
-                link: "https://divyangcareer.com/jobs/locomotor-disability/customer-care-executive-2/"
-              },
-              {
-                title: "Computer Science Specialist",
-                company: "Multiple Sclerosis Careers",
-                location: "Bangalore",
-                type: "Full-time",
-                salary: "₹40,000 - ₹70,000/month",
-                description: "Work on cutting-edge computer science projects to support research and development.",
-                link: "https://divyangcareer.com/jobs/multiple-sclerosis/computer-science/"
-              },
-              {
-                title: "Waiter/Steward/Delivery",
-                company: "Multiple Disabilities Careers",
-                location: "Chennai",
-                type: "Full-time",
-                salary: "₹15,000 - ₹25,000/month",
-                description: "Serve customers in restaurants or handle delivery tasks efficiently.",
-                link: "https://divyangcareer.com/jobs/multiple-disabilities/waiter-steward-delivery/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/speech-and-language-disability/package-job/",
+                category: "Administrative",
+                tags: ["Contract", "Administrative"],
+                postedDate: "1 week ago"
+            },
+            {
+            id: 3,
+            title: "Data Entry Operator",
+            company: "Divyang Career",
+            location: "Mumbai",
+            type: "Full-time",
+            salary: "₹12,000 - ₹18,000/month",
+            description: "Perform accurate data entry tasks. Basic computer knowledge required.",
+            link: "https://divyangcareer.com/jobs/physical-disability/data-entry-operator-2/",
+            category: "Administrative",
+            tags: ["Featured", "Full-time", "Administrative"],
+            postedDate: "2 days ago"
+        },
+        {
+            id: 4,
+            title: "Customer Care Executive",
+            company: "Divyang Career",
+            location: "Delhi",
+            type: "Full-time",
+            salary: "₹20,000 - ₹30,000/month",
+            description: "Provide support to customers by addressing queries and resolving issues.",
+            link: "https://divyangcareer.com/jobs/locomotor-disability/customer-care-executive-2/",
+            category: "Administrative",
+            tags: ["Full-time", "Administrative"],
+            postedDate: "5 days ago"
+        },
+        {
+            id: 5,
+            title: "Computer Science Specialist",
+            company: "Multiple Sclerosis Careers",
+            location: "Bangalore",
+            type: "Full-time",
+            salary: "₹40,000 - ₹70,000/month",
+            description: "Work on cutting-edge computer science projects to support research and development.",
+            link: "https://divyangcareer.com/jobs/multiple-sclerosis/computer-science/",
+            category: "Technology",
+            tags: ["Featured", "Full-time", "Technology"],
+            postedDate: "4 days ago"
+        },
+        {
+            id: 6,
+            title: "Waiter/Steward/Delivery",
+            company: "Multiple Disabilities Careers",
+            location: "Chennai",
+            type: "Full-time",
+            salary: "₹15,000 - ₹25,000/month",
+            description: "Serve customers in restaurants or handle delivery tasks efficiently.",
+            link: "https://divyangcareer.com/jobs/multiple-disabilities/waiter-steward-delivery/",
+            category: "Administrative",
+            tags: ["Full-time", "Administrative"],
+            postedDate: "1 week ago"
+        },
+        {
+                id: 7,
                 title: "Video KYC Analyst",
                 company: "Divyang Career",
                 location: "Kolkata",
                 type: "Full-time",
                 salary: "₹25,000 - ₹35,000/month",
                 description: "Analyze KYC data via video interactions. Good communication skills are a must.",
-                link: "https://divyangcareer.com/jobs/locomotor-disability/video-kyc-analyst/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/locomotor-disability/video-kyc-analyst/",
+                category: "Technology",
+                tags: ["Featured", "Full-time", "Technology"],
+                postedDate: "3 days ago"
+            },
+            {
+                id: 8,
                 title: "Punjabi Teacher",
                 company: "Divyang Career",
                 location: "Amritsar",
                 type: "Part-time",
                 salary: "₹20,000/month",
                 description: "Teach Punjabi language to students online or offline.",
-                link: "https://divyangcareer.com/jobs/locomotor-disability/punjabi-teacher/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/locomotor-disability/punjabi-teacher/",
+                category: "Education",
+                tags: ["Featured", "Part-time", "Education"],
+                postedDate: "2 days ago"
+            },
+            {
+                id: 9,
                 title: "Remote Internet Assessor (Urdu Speakers)",
                 company: "Multiple Disabilities Careers",
                 location: "Remote",
                 type: "Part-time",
                 salary: "₹10,000 - ₹15,000/month",
                 description: "Evaluate internet content quality in Urdu. Requires native proficiency.",
-                link: "https://divyangcareer.com/jobs/multiple-disabilities/remote-internet-assessor-urdu-speakers/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/multiple-disabilities/remote-internet-assessor-urdu-speakers/",
+                category: "Technology",
+                tags: ["Part-time", "Technology"],
+                postedDate: "4 days ago"
+            },
+            {
+                id: 10,
                 title: "Full-time Writer/Analyst (Bengali Speakers)",
                 company: "Multiple Disabilities Careers",
                 location: "Kolkata",
                 type: "Full-time",
                 salary: "₹20,000 - ₹30,000/month",
                 description: "Analyze and create content in Bengali. Writing skills are essential.",
-                link: "https://divyangcareer.com/jobs/multiple-disabilities/full-time-writer-analyst-bengali-speakers/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/multiple-disabilities/full-time-writer-analyst-bengali-speakers/",
+                category: "Technology",
+                tags: ["Featured", "Full-time", "Technology"],
+                postedDate: "2 days ago"
+            },
+            {
+                id: 11,
                 title: "At-home Internet Assessor (Punjabi Speakers)",
                 company: "Multiple Disabilities Careers",
                 location: "Remote",
                 type: "Part-time",
                 salary: "₹12,000/month",
                 description: "Assess Punjabi internet content for quality and relevance.",
-                link: "https://divyangcareer.com/jobs/multiple-disabilities/at-home-internet-assessor-punjabi-speakers/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/multiple-disabilities/at-home-internet-assessor-punjabi-speakers/",
+                category: "Technology",
+                tags: ["Part-time", "Technology"],
+                postedDate: "6 days ago"
+            },
+            {
+                id: 12,
                 title: "Homebased Sindhi Speaking Internet Rater",
                 company: "Multiple Disabilities Careers",
                 location: "Remote",
                 type: "Part-time",
                 salary: "₹10,000 - ₹15,000/month",
                 description: "Evaluate and rate internet content in Sindhi. Requires native-level fluency.",
-                link: "https://divyangcareer.com/jobs/multiple-disabilities/homebased-sindhi-speaking-internet-rater/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/multiple-disabilities/homebased-sindhi-speaking-internet-rater/",
+                category: "Technology",
+                tags: ["Part-time", "Technology"],
+                postedDate: "3 days ago"
+            },
+            {
+                id: 13,
                 title: "Pharmacist (DPharm)",
                 company: "Divyang Career",
                 location: "Chennai",
                 type: "Full-time",
                 salary: "₹30,000 - ₹50,000/month",
                 description: "Dispense medicines and counsel patients. DPharm qualification required.",
-                link: "https://divyangcareer.com/jobs/blood-disorder/pharmacist-required-dpharm/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/blood-disorder/pharmacist-required-dpharm/",
+                category: "Healthcare",
+                tags: ["Featured", "Full-time", "Healthcare"],
+                postedDate: "1 day ago"
+            },
+            {
+                id: 14,
                 title: "Junior Environmental Engineer",
                 company: "Divyang Career",
                 location: "Pune",
                 type: "Full-time",
                 salary: "₹40,000 - ₹60,000/month",
                 description: "Work on environmental projects to promote sustainability.",
-                link: "https://divyangcareer.com/jobs/jobs-categories/junior-environmental-engineer/"
-              },
-              {
+                link: "https://divyangcareer.com/jobs/jobs-categories/junior-environmental-engineer/",
+                category: "Technology",
+                tags: ["Full-time", "Technology"],
+                postedDate: "5 days ago"
+            },
+            {
+                id: 15,
                 title: "Apply Job 5228",
                 company: "Swarajability",
                 location: "Remote",
                 type: "Contract",
                 salary: "₹15,000 - ₹25,000/month",
                 description: "Work on unique assignments as part of the Swarajability initiative.",
-                link: "https://www.swarajability.org/apply-job/5228"
-              }
-            ,
+                link: "https://www.swarajability.org/apply-job/5228",
+                category: "Administrative",
+                tags: ["Contract", "Administrative"],
+                postedDate: "2 days ago"
+            }
             // Add more jobs as needed
-        ];
+        ]
+
 
         const otherJobs = [
             // "https://www.swarajability.org/apply-job/5228",
@@ -377,51 +449,51 @@ const fetchNewsArticles = async (query) => {
 // Function to fetch podcasts from Podcast API
 const fetchPodcasts = async (str) => {
     console.log(str)
-        const podcastApiUrl = 'https://api.taddy.org';
-        const headers = {
-            'Content-Type': 'application/json',
-            'X-USER-ID': 2233,
-            'X-API-KEY': process.env.PODCAST_API, // Replace with your actual API key
-        };
-    
-        const body = JSON.stringify({
-            query: `{ getPodcastSeries(name: "${str}") { uuid name rssUrl } }`,
+    const podcastApiUrl = 'https://api.taddy.org';
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-USER-ID': 2233,
+        'X-API-KEY': process.env.PODCAST_API, // Replace with your actual API key
+    };
+
+    const body = JSON.stringify({
+        query: `{ getPodcastSeries(name: "${str}") { uuid name rssUrl } }`,
+    });
+
+    try {
+        const response = await fetch(podcastApiUrl, {
+            method: 'POST',
+            headers: headers,
+            body: body,
         });
-    
-        try {
-            const response = await fetch(podcastApiUrl, {
-                method: 'POST',
-                headers: headers,
-                body: body,
-            });
-    console.log(response)
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to fetch podcast series: ${errorText}`);
-            }
-    
-            const data = await response.json();
-            console.log("data")
-            // console.log(data)
-            return data;
-        } catch (error) {
-            console.error('Error:', error.message);
-            throw error;
+        console.log(response)
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to fetch podcast series: ${errorText}`);
         }
+
+        const data = await response.json();
+        console.log("data")
+        // console.log(data)
+        return data;
+    } catch (error) {
+        console.error('Error:', error.message);
+        throw error;
+    }
 };
 //end mine
 // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/news'
 router.get('/news', fetchuser, async (req, res) => {
     try {
-          const query = "Sensory Disabled";
-        
+        const query = "Sensory Disabled";
+
         const articles = await fetchNewsArticles(query);
         //console.log(podcasts)
         res.status(200).json({
             success: true,
-           multimedia: {
-            articles,
-        }
+            multimedia: {
+                articles,
+            }
         });
     }
     catch (err) {
@@ -433,17 +505,17 @@ router.get('/news', fetchuser, async (req, res) => {
 // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/podcast'
 router.get('/podcast', fetchuser, async (req, res) => {
     try {
-          const query = "Sensory Disabled";
-        
+        const query = "Sensory Disabled";
+
         const podcasts = await fetchPodcasts(query);
         console.log(podcasts)
         res.status(200).json({
             success: true,
-           multimedia: {
-            podcasts,
-        }
+            multimedia: {
+                podcasts,
+            }
         });
-        
+
     }
     catch (err) {
         res.status(500).json({ success: false, error: err.message });
@@ -455,7 +527,7 @@ router.get('/podcast', fetchuser, async (req, res) => {
 // router.post('/multimedia', fetchuser, async (req, res) => {
 //     try {
 //         const query = "pwd";  // Replace with your dynamic query logic if needed
-        
+
 //         // Fetch news articles and podcasts
 //         // const articles = await fetchNewsArticles(query);
 //         const podcasts = await fetchPodcasts(query);
