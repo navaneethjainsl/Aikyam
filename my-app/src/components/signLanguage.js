@@ -5,20 +5,20 @@ import io from "socket.io-client";
 export default function SignLanguageDetector({ setSidebar }) {
   const [isDetecting, setIsDetecting] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
-  const [responseTextAlphabets, setResponseTextAlphabets] = useState(""); 
-  const [responseTextWords, setResponseTextWords] = useState(""); 
-  const [detectedTextAlphabets, setDetectedTextAlphabets] = useState(""); 
-  const [detectedTextWords, setDetectedTextWords] = useState(""); 
-  const [mode, setMode] = useState("alphabets"); 
+  const [responseTextAlphabets, setResponseTextAlphabets] = useState("");
+  const [responseTextWords, setResponseTextWords] = useState("");
+  const [detectedTextAlphabets, setDetectedTextAlphabets] = useState("");
+  const [detectedTextWords, setDetectedTextWords] = useState("");
+  const [mode, setMode] = useState("alphabets");
   const [instructionsVisible, setInstructionsVisible] = useState(true);
   const detectionInterval = useRef(null);
   const videoRef = useRef(null);
   const socketRef = useRef(null);
-  const lastDetectedRef = useRef(""); 
+  const lastDetectedRef = useRef("");
   const handDetectedRef = useRef(false);
 
   setSidebar(true);
-  
+
   useEffect(() => {
     return () => {
       if (socketRef.current) {
@@ -30,6 +30,21 @@ export default function SignLanguageDetector({ setSidebar }) {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
+  }, []);
+
+  // Stop the camera when the tab becomes hidden (e.g., switching tabs in the nav)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Stop camera and detection
+        handleStopCamera();
+        handleStopDetection();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
 
   const handleCameraAccess = () => {
@@ -77,7 +92,7 @@ export default function SignLanguageDetector({ setSidebar }) {
         } else {
           handDetectedRef.current = false;
           setDetectedTextAlphabets(data);
-          lastDetectedRef.current = data; 
+          lastDetectedRef.current = data;
         }
       });
 
@@ -289,20 +304,19 @@ export default function SignLanguageDetector({ setSidebar }) {
                 </button>
                 <button
                   onClick={
-                    isDetecting 
-                      ? handleStopDetection 
-                      : mode === "alphabets" 
-                        ? handleStartDetection 
+                    isDetecting
+                      ? handleStopDetection
+                      : mode === "alphabets"
+                        ? handleStartDetection
                         : handleStartDetection2
                   }
                   disabled={!isCameraActive}
-                  className={`p-2 rounded-full ${
-                    !isCameraActive 
-                      ? 'bg-gray-700 cursor-not-allowed opacity-50' 
-                      : isDetecting 
-                        ? 'bg-red-500 hover:bg-red-600' 
+                  className={`p-2 rounded-full ${!isCameraActive
+                      ? 'bg-gray-700 cursor-not-allowed opacity-50'
+                      : isDetecting
+                        ? 'bg-red-500 hover:bg-red-600'
                         : 'bg-aikyam-purple hover:opacity-90'
-                  } transition-colors`}
+                    } transition-colors`}
                   title={isDetecting ? "Stop Detection" : "Start Detection"}
                 >
                   {isDetecting ? (
@@ -321,14 +335,14 @@ export default function SignLanguageDetector({ setSidebar }) {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-semibold text-white">Detected Text</h2>
                   <div className="flex space-x-2">
-                    <button 
+                    <button
                       onClick={copyToClipboard}
                       className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors"
                       title="Copy to clipboard"
                     >
                       <Copy size={18} className="text-gray-300" />
                     </button>
-                    <button 
+                    <button
                       onClick={speakText}
                       className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors"
                       title="Read aloud"
@@ -337,7 +351,7 @@ export default function SignLanguageDetector({ setSidebar }) {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="min-h-32 bg-gray-900 rounded-lg p-4">
                   {!isCameraActive ? (
                     <p className="text-center text-gray-500 py-10">Turn on the camera to begin</p>

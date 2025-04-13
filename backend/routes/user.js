@@ -120,7 +120,7 @@ router.get('/chatbot', fetchuser, async (req, res) => {
         const chat = model.startChat({
             history: messages,
             generationConfig: {
-                maxOutputTokens: 100,
+                maxOutputTokens: 3000,
             },
         });
 
