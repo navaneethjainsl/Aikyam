@@ -1,8 +1,27 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Camera, Copy, Volume2, Play, Pause } from "lucide-react";
 import io from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 
 export default function SignLanguageDetector({ setSidebar }) {
+  const navigate = useNavigate();
+
+  // Utility to read a cookie by name
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+  };
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    const authToken = getCookie("authToken");
+    if (!authToken) {
+      navigate("/");
+    }
+  }, [navigate]);
+  
   const [isDetecting, setIsDetecting] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [responseTextAlphabets, setResponseTextAlphabets] = useState("");

@@ -1,60 +1,3 @@
-// // src/Sidebar.js
-// import React from 'react';
-// import { Button, Typography } from "@mui/material";
-// import { AccessibilityNew, Chat, Campaign, AutoFixHigh, Article } from "@mui/icons-material";
-// import { Link } from "react-router-dom"; // Import Link from react-router-dom
-// import SidebarImage from "./img/SidebarHelpImage.png";
-// import { motion } from "framer-motion";
-// // Update SidebarButton to accept a `to` prop
-// function SidebarButton({ icon, label, to }) {
-//   return (
-//     <Link to={to} style={{ textDecoration: 'none' }}> {/* Wrap Button in Link */}
-//       <Button
-//         variant="outlined"
-//         startIcon={icon}
-//         fullWidth
-//         className="justify-start text-white font-bold bg-white/70 backdrop-blur-sm hover:bg-gray-200"
-//       >
-//         {label}
-//       </Button>
-//     </Link>
-//   );
-// }
-
-// function Sidebar({sidebar}) {
-//   console.log(sidebar)
-//   return ( sidebar &&
-//     <motion.aside
-//       initial={{ x: -100, opacity: 0 }}
-//       animate={{ x: 0, opacity: 1 }}
-//       transition={{ duration: 0.7 }}
-//       className="bg-white/80 backdrop-blur-lg w-64 p-6 shadow-xl rounded-lg m-4 relative"
-//       style={{
-//         backgroundColor: "black",
-//         backgroundSize: 'cover',
-//         backgroundRepeat: 'no-repeat',
-//         color: '#444'
-//       }}
-//     >
-//       <Typography variant="h5" className="mb-6 font-bold text-gray-900">
-//         Accessibility Tab
-//       </Typography>
-//       <div className="space-y-4">
-//         <SidebarButton
-//           icon={<AccessibilityNew />}
-//           label="Sign Language Detector"
-//           to="/Sign" // Link to the /sign page
-//         />
-//         <SidebarButton icon={<Chat />} label="Chat Bot Assistance" to="/" />
-//         <SidebarButton icon={<Campaign />} label="Multimedia" />
-//         <SidebarButton icon={<AutoFixHigh />} label="Accessibility" to="/Accessibility" />
-//         <SidebarButton icon={<Article />} label="Jobs & Schemes" />
-//       </div>
-//     </motion.aside>
-//   );
-// }
-
-// export default Sidebar;
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -68,6 +11,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Cookies from 'js-cookie';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -149,9 +93,8 @@ export default function Sidebar({ enable }) {
         <div className="p-6 flex flex-col h-full">
           <div className="mb-8">
             <motion.h1
-              className={`text-3xl font-bold bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent ${
-                isCollapsed ? 'text-center text-2xl' : ''
-              }`}
+              className={`text-3xl font-bold bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent ${isCollapsed ? 'text-center text-2xl' : ''
+                }`}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -171,11 +114,10 @@ export default function Sidebar({ enable }) {
                 >
                   <Link
                     to={item.path}
-                    className={`flex items-center py-3 px-1.5 rounded-xl transition-colors ${
-                      location.pathname === item.path
+                    className={`flex items-center py-3 px-1.5 rounded-xl transition-colors ${location.pathname === item.path
                         ? 'bg-purple-500/10 text-purple-400'
                         : 'text-gray-300 hover:bg-purple-500/5'
-                    }`}
+                      }`}
                   >
                     <motion.div
                       variants={menuItemVariants}
@@ -183,9 +125,8 @@ export default function Sidebar({ enable }) {
                       className="flex items-center"
                     >
                       <item.icon
-                        className={`h-5 w-5 ${
-                          location.pathname === item.path ? 'text-purple-400' : ''
-                        }`}
+                        className={`h-5 w-5 ${location.pathname === item.path ? 'text-purple-400' : ''
+                          }`}
                       />
                       {!isCollapsed && <span className="ml-3 font-medium">{item.label}</span>}
                     </motion.div>
@@ -201,7 +142,13 @@ export default function Sidebar({ enable }) {
               whileTap={{ scale: 0.98 }}
               className={`flex items-center justify-center gap-2 py-2.5 w-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl hover:opacity-90 transition-opacity text-white font-medium shadow-lg shadow-purple-500/20`}
               onClick={() => {
-                navigate('/signin');
+                // clear all auth cookies
+                Cookies.remove('authToken');
+                Cookies.remove('username');
+                Cookies.remove('successMessage');
+
+                // now redirect to sign-in
+                navigate('/');
               }}
             >
               <LogOut className="h-4 w-4" />

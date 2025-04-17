@@ -169,32 +169,97 @@ router.get('/schemes', fetchuser, async (req, res) => {
     try {
         const schemes = [
             {
-                id: 1,
-                title: "Assistance to Disabled Persons for Purchase/Fitting of Aids and Appliances (ADIP)",
+                id: 3,
+                title: "Deendayal Disabled Rehabilitation Scheme (DDRS)",
                 organization: "Ministry of Social Justice and Empowerment",
                 provider: "Ministry of Social Justice and Empowerment",
-                category: "Equipment Support",
-                eligibility: "Persons with 40% disability and below monthly income of ₹20,000",
-                benefits: "Financial assistance for assistive devices",
-                description: "Up to 100% cost covered based on income criteria",
+                category: "Community Support",
+                eligibility: "Organizations working for persons with disabilities",
+                benefits: "Financial assistance to NGOs for rehabilitation services",
+                description: "Promotes voluntary action through financial support to organizations aiding persons with disabilities",
                 link: "#",
-                tags: ["Featured", "Equipment Support"],
+                tags: ["Community", "Support"],
                 deadline: "Ongoing"
             },
             {
-                id: 2,
-                title: "Scholarship for Students with Disabilities",
-                organization: "Department of Empowerment of Persons with Disabilities",
-                provider: "Department of Empowerment of Persons with Disabilities",
+                id: 4,
+                title: "National Scholarship Scheme",
+                organization: "National Portal of India",
+                provider: "Ministry of Social Justice and Empowerment",
                 category: "Education",
-                eligibility: "Students with disabilities pursuing higher education",
-                benefits: "Financial support for education expenses",
-                description: "Monthly stipend and annual grants for educational materials",
+                eligibility: "Students with disabilities pursuing post-matric professional and technical courses",
+                benefits: "Financial aid for course fees, books, and other education-related expenses",
+                description: "Supports higher education among students with disabilities",
                 link: "#",
                 tags: ["Education", "Financial Aid"],
-                deadline: "October 31, 2025"
+                deadline: "Varies by academic cycle"
+            },
+            {
+                id: 5,
+                title: "National Awards for Empowerment of Persons with Disabilities",
+                organization: "Ministry of Social Justice and Empowerment",
+                provider: "Ministry of Social Justice and Empowerment",
+                category: "Recognition",
+                eligibility: "Outstanding individuals and organizations contributing to disability empowerment",
+                benefits: "Awards and recognition",
+                description: "Honors exemplary contributions towards empowerment and inclusion of persons with disabilities",
+                link: "#",
+                tags: ["Recognition", "Inclusion"],
+                deadline: "Annual"
+            },
+            {
+                id: 6,
+                title: "Accessible India Campaign (Sugamya Bharat Abhiyan)",
+                organization: "Ministry of Social Justice and Empowerment",
+                provider: "Ministry of Social Justice and Empowerment",
+                category: "Accessibility",
+                eligibility: "Nationwide initiative for public infrastructure",
+                benefits: "Accessibility improvements in physical and digital spaces",
+                description: "Promotes universal accessibility in built environments, transport, and ICT",
+                link: "#",
+                tags: ["Accessibility", "Campaign"],
+                deadline: "Ongoing"
+            },
+            {
+                id: 7,
+                title: "Pradhan Mantri Kaushal Vikas Yojana (PMKVY)",
+                organization: "Ministry of Skill Development and Entrepreneurship",
+                provider: "National Skill Development Corporation (NSDC)",
+                category: "Skill Development",
+                eligibility: "Persons with disabilities seeking vocational training",
+                benefits: "Free training, certification, and job placement assistance",
+                description: "Provides skill development opportunities including for persons with disabilities",
+                link: "#",
+                tags: ["Skills", "Employment"],
+                deadline: "Ongoing"
+            },
+            {
+                id: 8,
+                title: "National Handicapped Finance and Development Corporation (NHFDC)",
+                organization: "Ministry of Social Justice and Empowerment",
+                provider: "NHFDC",
+                category: "Financial Assistance",
+                eligibility: "Persons with 40% or more disability",
+                benefits: "Loans and grants for self-employment and education",
+                description: "Promotes economic empowerment through financial support",
+                link: "#",
+                tags: ["Loans", "Self-Employment"],
+                deadline: "Ongoing"
+            },
+            {
+                id: 9,
+                title: "National Career Service Centers for Differently Abled (NCSC-DA)",
+                organization: "Directorate General of Employment (DGE)",
+                provider: "Ministry of Labour and Employment",
+                category: "Employment Support",
+                eligibility: "Persons with disabilities",
+                benefits: "Vocational training, job placement, and career counseling",
+                description: "Supports employment and training for persons with disabilities",
+                link: "#",
+                tags: ["Career", "Job Placement"],
+                deadline: "Ongoing"
             }
-        ]
+        ];
         res.status(200).json({ success: true, message: schemes })
     }
     catch (err) {

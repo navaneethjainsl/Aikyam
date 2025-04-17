@@ -88,7 +88,7 @@ const Login = ({ setSidebar }) => {
           placeholder="••••••••"
         />
 
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <div className="flex items-center">
             <input
               id="remember-me"
@@ -105,7 +105,7 @@ const Login = ({ setSidebar }) => {
               Forgot password?
             </a>
           </div>
-        </div>
+        </div> */}
 
         <AuthButton type="submit" isLoading={isLoading}>
           Sign In
