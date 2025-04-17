@@ -4,7 +4,7 @@ import MultimediaContent from "./MultimediaContent";
 import ToolsContent from "./ToolsContent";
 
 const Accessibility = ({setSidebar}) => {
-  const [activeTab, setActiveTab] = useState("multimedia");
+  const [activeTab, setActiveTab] = useState("tools");
   setSidebar(true)
 
   return (
@@ -12,8 +12,7 @@ const Accessibility = ({setSidebar}) => {
       <div className="container mx-auto px-4 py-8 max-w-6xl flex-grow">
         <div className="mb-8">
           <h1
-            className={`text-3xl md:text-4xl font-bold text-center mb-4 ${
-              activeTab === "multimedia" ? "text-white" : "text-[#9b87f5]"}`
+            className={`text-3xl md:text-4xl font-bold text-center mb-4 text-[#9b87f5]`
             }
           >
             {activeTab === "multimedia" ? "Multimedia" : "Accessibility Tools"}
