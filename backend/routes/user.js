@@ -9,6 +9,8 @@ import User from '../models/user.js';
 import getUserDocument from '../models/document.js';
 import model from '../models/geminiModel.js';
 import NewsAPI from 'newsapi';
+import * as cheerio from 'cheerio';
+import axios from 'axios';
 // import { gql, request } from 'graffle'
 // import pkg from 'graffle';
 // const { gql, request } = pkg;
@@ -447,39 +449,50 @@ const fetchNewsArticles = async (query) => {
 };
 
 // Function to fetch podcasts from Podcast API
-const fetchPodcasts = async (str) => {
-    console.log(str)
-    const podcastApiUrl = 'https://api.taddy.org';
-    const headers = {
-        'Content-Type': 'application/json',
-        'X-USER-ID': 2233,
-        'X-API-KEY': process.env.PODCAST_API, // Replace with your actual API key
+const fetchPodcasts = async () => {
+
+    const baseURL = 'https://disabilityvisibilityproject.com/category/podcast/page/';
+    const totalPages = 7; // Total pages of podcast listings
+    const mp3Links = [];
+    const imageLinks = [];
+
+    async function getMP3LinksAndImages() {
+        for (let page = 1; page <= totalPages; page++) {
+            const url = `${baseURL}${page}/`;
+            try {
+                const { data } = await axios.get(url);
+                const $ = cheerio.load(data);
+
+                // Extract MP3 links
+                $('a').each((_, link) => {
+                    const href = $(link).attr('href');
+                    if (href && href.includes('.mp3') && !mp3Links.includes(href)) {
+                        mp3Links.push(href.replace(/Podcast(?=[^Podcast]*$)/, ''));
+                    }
+                });
+
+                // Extract image src links
+                $('img').each((_, img) => {
+                    const src = $(img).attr('src');
+                    if (src && !imageLinks.includes(src)) {
+                        imageLinks.push(src);
+                    }
+                });
+
+                console.log(`Scraped page ${page}`);
+            } catch (error) {
+                console.error(`Error fetching page ${page}:`, error.message);
+            }
+        }
+    }
+
+
+    await getMP3LinksAndImages();
+    return {
+        mp3Links: mp3Links.reverse(),
+        imageLinks: imageLinks.reverse()
     };
 
-    const body = JSON.stringify({
-        query: `{ getPodcastSeries(name: "${str}") { uuid name rssUrl } }`,
-    });
-
-    try {
-        const response = await fetch(podcastApiUrl, {
-            method: 'POST',
-            headers: headers,
-            body: body,
-        });
-        console.log(response)
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Failed to fetch podcast series: ${errorText}`);
-        }
-
-        const data = await response.json();
-        console.log("data")
-        // console.log(data)
-        return data;
-    } catch (error) {
-        console.error('Error:', error.message);
-        throw error;
-    }
 };
 //end mine
 // Sign Language Detection Tab: GET 'http://localhost:5000/api/user/news'
@@ -507,13 +520,12 @@ router.get('/podcast', fetchuser, async (req, res) => {
     try {
         const query = "Sensory Disabled";
 
-        const podcasts = await fetchPodcasts(query);
+        const podcasts = await fetchPodcasts();
+
         console.log(podcasts)
         res.status(200).json({
             success: true,
-            multimedia: {
-                podcasts,
-            }
+            podcasts
         });
 
     }
