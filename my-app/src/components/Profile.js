@@ -2,15 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { User, Mail, Phone, MapPin, Pencil, Save } from 'lucide-react';
 
-const ProfilePage = ({setSidebar}) => {
+const ProfilePage = ({ setSidebar }) => {
   const [editMode, setEditMode] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: 'Alexander Mitchell',
-    email: 'alex.mitchell@example.com',
-    phone: '+1 (555) 123-4567',
-    address: '123 Main Street, New York, NY 10001',
-    bio: 'Software developer passionate about accessibility technologies and creating inclusive digital experiences.',
-  });
+  const [profileData, setProfileData] = useState({});
   setSidebar(true);
 
   const getCookie = (name) => {
@@ -56,8 +50,35 @@ const ProfilePage = ({setSidebar}) => {
     setProfileData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setEditMode(false);
+
+    try {
+      const authToken = getCookie('authToken');
+      if (!authToken) throw new Error('Auth token is missing');
+
+      const response = await axios.post(
+        'http://localhost:5000/api/auth/updateuser',
+        profileData ,
+        {
+          headers: {
+            'auth-token': authToken,
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      setProfileData(response.data.user);
+    } catch (error) {
+      console.error('Error fetching user data:', error.message);
+    } finally {
+      // setIsLoading(false);
+    }
+
+
     alert('Profile Updated: Your profile information has been saved successfully.');
   };
 
@@ -70,9 +91,8 @@ const ProfilePage = ({setSidebar}) => {
             if (editMode) handleSave();
             else setEditMode(true);
           }}
-          className={`flex items-center px-4 py-2 text-white rounded-md transition ${
-            editMode ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-700 hover:bg-purple-800'
-          }`}
+          className={`flex items-center px-4 py-2 text-white rounded-md transition ${editMode ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-700 hover:bg-purple-800'
+            }`}
         >
           {editMode ? <Save className="mr-2 h-4 w-4" /> : <Pencil className="mr-2 h-4 w-4" />}
           {editMode ? 'Save Changes' : 'Edit Profile'}
@@ -123,7 +143,7 @@ const ProfilePage = ({setSidebar}) => {
                       id={field.name}
                       name={field.name}
                       type={field.type || 'text'}
-                      value={profileData[field.name]}
+                      value={profileData[field.name] || ""}
                       onChange={handleChange}
                       disabled={!editMode}
                       placeholder={field.label}
@@ -138,7 +158,7 @@ const ProfilePage = ({setSidebar}) => {
                 <textarea
                   id="bio"
                   name="bio"
-                  value={profileData.bio}
+                  value={profileData.bio || ""}
                   onChange={handleChange}
                   disabled={!editMode}
                   placeholder="Write a short bio about yourself"

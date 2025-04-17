@@ -11,21 +11,27 @@ const userSchema = new Schema({
         required: true,
         unique: true,
     },
-    // email:{
-    //     type: String,
-    //     required: false,
-    //     unique: true,
-    // },
-    // dob:{
-    //     type: Date,
-    //     required: false,
-    //     unique: false,
-    // },
-    // bio:{
-    //     type: String,
-    //     required: false,
-    //     unique: false,
-    // },
+    email:{
+        type: String,
+        required: false,
+        default: "",
+    },
+    phone:{
+        type: Number,
+        required: false,
+    },
+    address:{
+        type: String,
+        required: false,
+        unique: false,
+        deafult: "",
+    },
+    bio:{
+        type: String,
+        required: false,
+        unique: false,
+        deafult: "",
+    },
     password:{
         type: String,
         required: true,
