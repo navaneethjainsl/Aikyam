@@ -68,7 +68,7 @@ export default function Sidebar({enable}) {
   const menuItems = [
     { icon: Camera, label: 'Sign Language Detector', path: '/signLanguage' },
     { icon: MessageSquare, label: 'Chat Bot Assistance', path: '/chatbot' },
-    { icon: PlayCircle, label: 'Multimedia', path: '/multimedia' },
+    // { icon: PlayCircle, label: 'Multimedia', path: '/multimedia' },
     { icon: Wrench, label: 'Accessibility Tools', path: '/accessibilityTools' },
     { icon: Briefcase, label: 'Jobs & Schemes', path: '/jobsAndSchemes' },
     { icon: User, label: 'Profile', path: '/profile' },
