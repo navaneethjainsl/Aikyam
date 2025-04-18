@@ -23,7 +23,7 @@ const Accessibility = ({setSidebar}) => {
     }
   }, [navigate]);
   
-  const [activeTab, setActiveTab] = useState("tools");
+  const [activeTab, setActiveTab] = useState("multimedia");
   setSidebar(true)
 
   return (
@@ -46,15 +46,6 @@ const Accessibility = ({setSidebar}) => {
         {/* Custom Tab Buttons */}
         <div className="w-full max-w-4xl mx-auto mb-10 grid grid-cols-2 rounded-md bg-white/10 border border-white/20 overflow-hidden">
           <button
-            onClick={() => setActiveTab("tools")}
-            className={`flex items-center justify-center gap-2 px-4 py-3 text-white transition-colors ${
-              activeTab === "tools" ? "bg-[#7E69AB]" : "hover:bg-white/5"
-            }`}
-          >
-            <Newspaper size={18} />
-            Tools
-          </button>
-          <button
             onClick={() => setActiveTab("multimedia")}
             className={`flex items-center justify-center gap-2 px-4 py-3 text-white transition-colors ${
               activeTab === "multimedia" ? "bg-[#7E69AB]" : "hover:bg-white/5"
@@ -62,6 +53,15 @@ const Accessibility = ({setSidebar}) => {
           >
             <VideoIcon size={18} />
             Multimedia
+          </button>
+          <button
+            onClick={() => setActiveTab("tools")}
+            className={`flex items-center justify-center gap-2 px-4 py-3 text-white transition-colors ${
+              activeTab === "tools" ? "bg-[#7E69AB]" : "hover:bg-white/5"
+            }`}
+          >
+            <Newspaper size={18} />
+            Tools
           </button>
         </div>
 

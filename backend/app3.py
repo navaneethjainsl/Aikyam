@@ -26,7 +26,7 @@ mp_hands = mp.solutions.hands
 alphabet = list(string.ascii_uppercase)
 alphabet.insert(alphabet.index('N') + 1, "NEXT")
 
-words = ['Calm Down', 'Father', 'Fine', 'Hello', 'I hate you', 'I love you', "I'm/ I am", 'Love', 'Money', 'Mother', 'Okay', 'Sorry', 'Stop', 'Telephone', 'Water', 'Where', 'Why', 'Yes']
+words = ['Calm Down', 'Father', 'Fine', 'Hello', 'I hate you', 'I love you', "I am", 'Love', 'Money', 'Mother', 'Okay', 'Sorry', 'Stop', 'Telephone', 'Water', 'Where', 'Why', 'Yes']
 
 def predict_landmarks(landmarks):
     """Predict the sign language alphabet from landmarks."""

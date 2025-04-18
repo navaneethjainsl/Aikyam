@@ -46,7 +46,7 @@ router.get('/voice/assistant', async (req, res) => {
     const query = req.query.query
     console.log(query);
 
-    const userMessage = `check if the given sentence is similar/closer to any one of the given sentences and return the sentence id. If none return none \nQuery: ${query}\nT1: Go to sign detection tab\nT2: Go to chat bot\nT3: Go to ( multimedia / OCR / Text to speech / speech to text / Interactive learning ) section\nT4: Go to accessibility section\nT5: Go to Jobs / Schemes section\nT6: Go to profile section\n Give the answer in one word`
+    const userMessage = `check if the given sentence is similar/closer to any one of the given sentences and return the sentence id. If none return none \nQuery: ${query}\nT1: Go to sign detection tab\nT2: Go to chat bot\nT3: Go to ( multimedia / OCR / Text to speech / speech to text / Interactive learning ) section\nT4: Go to accessibility section\nT5: Go to Jobs / Schemes section\nT6: Go to (profile / bio) section\n Give the answer in one word`
 
     let messages = []
     // {

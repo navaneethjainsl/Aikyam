@@ -21,7 +21,7 @@ export default function SignLanguageDetector({ setSidebar }) {
       navigate("/");
     }
   }, [navigate]);
-  
+
   const [isDetecting, setIsDetecting] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [responseTextAlphabets, setResponseTextAlphabets] = useState("");
@@ -238,6 +238,10 @@ export default function SignLanguageDetector({ setSidebar }) {
     }
   };
 
+  const [editableText, setEditableText] = useState(
+    mode === "alphabets" ? responseTextAlphabets : responseTextWords
+  );
+
   return (
     <div className="min-h-screen bg-dark-blue text-white">
       <div className="container mx-auto max-w-7xl px-4 py-8">
@@ -331,10 +335,10 @@ export default function SignLanguageDetector({ setSidebar }) {
                   }
                   disabled={!isCameraActive}
                   className={`p-2 rounded-full ${!isCameraActive
-                      ? 'bg-gray-700 cursor-not-allowed opacity-50'
-                      : isDetecting
-                        ? 'bg-red-500 hover:bg-red-600'
-                        : 'bg-aikyam-purple hover:opacity-90'
+                    ? 'bg-gray-700 cursor-not-allowed opacity-50'
+                    : isDetecting
+                      ? 'bg-red-500 hover:bg-red-600'
+                      : 'bg-aikyam-purple hover:opacity-90'
                     } transition-colors`}
                   title={isDetecting ? "Stop Detection" : "Start Detection"}
                 >
@@ -379,11 +383,19 @@ export default function SignLanguageDetector({ setSidebar }) {
                   ) : (
                     <>
                       <p className="mb-2 text-sm text-gray-400">
-                        Current: <span className="font-medium text-aikyam-purple">{mode === "alphabets" ? detectedTextAlphabets : detectedTextWords}</span>
+                        Current:{" "}
+                        <span className="font-medium text-aikyam-purple">{mode === "alphabets" ? detectedTextAlphabets : detectedTextWords}</span>
                       </p>
-                      <div className="bg-gray-800 border border-gray-700 rounded p-3 min-h-16 text-white">
+
+                      {/* <div className="bg-gray-800 border border-gray-700 rounded p-3 min-h-16 text-white">
                         {mode === "alphabets" ? responseTextAlphabets : responseTextWords}
-                      </div>
+                      </div> */}
+
+                      <textarea
+                        className="w-full bg-gray-800 border border-gray-700 rounded p-3 min-h-16 text-white resize-none"
+                        value={mode === "alphabets" ? responseTextAlphabets : responseTextWords}
+                        onChange={(e) => mode === "alphabets" ? setResponseTextAlphabets(e.target.value) : setResponseTextWords(e.target.value)}
+                      />
                     </>
                   )}
                 </div>

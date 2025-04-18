@@ -6,60 +6,60 @@ import Cookies from 'js-cookie';
 
 axios.defaults.withCredentials = true;
 
-const podcasts = [
-    {
-        id: 1,
-        title: "Understanding Accessibility",
-        episode: "Episode 1",
-        // duration: "32 min",
-        image: "/lovable-uploads/3a00a201-c1ea-4ef2-b3a5-cc25c9a6aa29.png",
-    },
-    {
-        id: 2,
-        title: "Sign Language Basics",
-        episode: "Episode 2",
-        // duration: "45 min",
-        image: "/lovable-uploads/efa0a8cc-c777-43c9-9eb9-dbf9f72e92a8.png",
-    },
-    {
-        id: 3,
-        title: "Tech for Inclusivity",
-        episode: "Episode 3",
-        // duration: "28 min",
-        image: "/lovable-uploads/5bd02c50-2c1b-4d5d-b578-4b192bc6685f.png",
-    },
-];
+// const podcasts = [
+//     {
+//         id: 1,
+//         title: "Understanding Accessibility",
+//         episode: "Episode 1",
+//         // duration: "32 min",
+//         image: "/lovable-uploads/3a00a201-c1ea-4ef2-b3a5-cc25c9a6aa29.png",
+//     },
+//     {
+//         id: 2,
+//         title: "Sign Language Basics",
+//         episode: "Episode 2",
+//         // duration: "45 min",
+//         image: "/lovable-uploads/efa0a8cc-c777-43c9-9eb9-dbf9f72e92a8.png",
+//     },
+//     {
+//         id: 3,
+//         title: "Tech for Inclusivity",
+//         episode: "Episode 3",
+//         // duration: "28 min",
+//         image: "/lovable-uploads/5bd02c50-2c1b-4d5d-b578-4b192bc6685f.png",
+//     },
+// ];
 
-const articles = [
-    {
-        id: 1,
-        title: "New Advancements in Sign Language Recognition Technology",
-        date: "May 15, 2023",
-        content: "Recent breakthroughs in computer vision are making sign language recognition more accurate and accessible than ever before.",
-        url: "#",
-    },
-    {
-        id: 2,
-        title: "How AI is Transforming Accessibility Tools",
-        date: "April 22, 2023",
-        content: "Artificial intelligence is revolutionizing accessibility tools, making them more intuitive and personalized for users with diverse needs.",
-        url: "#",
-    },
-    {
-        id: 3,
-        title: "Government Launches New Schemes for Specially Abled Individuals",
-        date: "March 10, 2023",
-        content: "A comprehensive look at the latest government initiatives aimed at supporting and empowering the specially abled community.",
-        url: "#",
-    },
-    {
-        id: 4,
-        title: "The Evolution of Assistive Technology",
-        date: "February 5, 2023",
-        content: "From simple tools to sophisticated digital solutions, explore how assistive technology has evolved over the decades.",
-        url: "#",
-    },
-];
+// const articles = [
+//     {
+//         id: 1,
+//         title: "New Advancements in Sign Language Recognition Technology",
+//         date: "May 15, 2023",
+//         description: "Recent breakthroughs in computer vision are making sign language recognition more accurate and accessible than ever before.",
+//         url: "#",
+//     },
+//     {
+//         id: 2,
+//         title: "How AI is Transforming Accessibility Tools",
+//         date: "April 22, 2023",
+//         description: "Artificial intelligence is revolutionizing accessibility tools, making them more intuitive and personalized for users with diverse needs.",
+//         url: "#",
+//     },
+//     {
+//         id: 3,
+//         title: "Government Launches New Schemes for Specially Abled Individuals",
+//         date: "March 10, 2023",
+//         description: "A comprehensive look at the latest government initiatives aimed at supporting and empowering the specially abled community.",
+//         url: "#",
+//     },
+//     {
+//         id: 4,
+//         title: "The Evolution of Assistive Technology",
+//         date: "February 5, 2023",
+//         description: "From simple tools to sophisticated digital solutions, explore how assistive technology has evolved over the decades.",
+//         url: "#",
+//     },
+// ];
 
 const AudioPlayer = ({ audioSrc, title }) => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -177,20 +177,29 @@ const PodcastCard = ({ title, episode, duration, image, audio }) => {
     );
 };
 
-const ArticleCard = ({ title, date, content, url }) => (
-    <div className="bg-white/5 p-4 rounded-lg">
-        <p className="text-gray-400 text-xs mb-1">{date}</p>
-        <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-        <p className="text-gray-300 mb-3">{content}</p>
-        <a href={url} className="inline-flex items-center text-white hover:text-gray-200">
-            <span className="mr-1">Read more</span>
-            <ArrowRight size={16} />
-        </a>
-    </div>
-);
+const ArticleCard = ({ title, publishedAt, description, url }) => {
+
+    console.log("publishedAt")
+    console.log(publishedAt)
+    const date = new Date(publishedAt);
+    console.log("date")
+    console.log(date)
+    return (
+        <div className="bg-white/5 p-4 rounded-lg">
+            <p className="text-gray-400 text-xs mb-1">{date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>
+            <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
+            <p className="text-gray-300 mb-3">{description}</p>
+            <a href={url} className="inline-flex items-center text-white hover:text-gray-200">
+                <span className="mr-1">Read more</span>
+                <ArrowRight size={16} />
+            </a>
+        </div>
+    );
+}
 
 const MultimediaContent = () => {
     const [podcasts, setPodcasts] = useState([]);
+    const [articles, setArticles] = useState([]);
     const [visibleCount, setVisibleCount] = useState(6); // initially show 2 podcasts
 
     const getCookie = (name) => {
@@ -236,6 +245,34 @@ const MultimediaContent = () => {
         };
 
         fetchPodcasts();
+    }, []);
+
+    useEffect(() => {
+        const fetchNews = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:5000/api/user/news",
+                    {
+                        headers: {
+                            'auth-token': authToken,
+                        },
+                    }
+                );
+
+                if (response.data.success) {
+                    const { articles } = response.data.multimedia;
+
+                    setArticles(articles);
+                } else {
+                    toast.error("Failed to fetch articles data.");
+                }
+            } catch (error) {
+                console.error("Error fetching articles:", error);
+                toast.error("Failed to load articles.");
+            }
+        };
+
+        fetchNews();
     }, []);
 
     const showMore = () => {

@@ -128,7 +128,7 @@ const ProfilePage = ({ setSidebar }) => {
             )} */}
             <div className="text-center mt-4">
               <h3 className="text-xl font-semibold">{profileData.name}</h3>
-              <p className="text-gray-400">Member since April 2023</p>
+              <p className="text-gray-400">{profileData.username}</p>
             </div>
           </div>
         </div>

@@ -83,14 +83,14 @@
 //         synthRef.current.cancel();
 //         return;
 //       }
-      
+
 //         // If no navigation is required, synthesize speech
 //         if (data){ 
 //           // else{
 //           const utterance = new SpeechSynthesisUtterance(data);
 //           utterance.lang = 'en-US';
 //           utterance.voice = synthRef.current.getVoices().find((voice) => voice.lang === 'en-US');
-  
+
 //           utterance.onerror = (e) => {
 //             console.error('Speech synthesis error:', e.error);
 //           };
@@ -99,7 +99,7 @@
 //           };
 //           synthRef.current.speak(utterance);
 //         }
-      
+
 
 //     } catch (error) {
 //       console.error('Error communicating with the backend:', error);
@@ -186,7 +186,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, isListen }) => {
       alert('Sorry, your browser does not support Speech Recognition or Speech Synthesis.');
       return;
     }
-   
+
 
     const recognition = new window.webkitSpeechRecognition();
     recognition.lang = 'en-US';
@@ -218,7 +218,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, isListen }) => {
     }
   }, [isOpen]);
 
-  
+
   const getCookie = (name) => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -255,7 +255,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, isListen }) => {
         navigate('/chatbot');
         return;
       } else if (data === 'T3') {
-        navigate('/multimedia');
+        navigate('/accessibilityTools');
         return;
       } else if (data === 'T4') {
         navigate('/accessibilityTools');
@@ -263,8 +263,11 @@ const VoiceAssistantModal = ({ isOpen, onClose, isListen }) => {
       } else if (data === 'T5') {
         navigate('/jobsAndSchemes');
         return;
+      } else if (data === 'T6') {
+        navigate('/profile');
+        return;
       }
-      
+
       // If no navigation is required, synthesize speech
       if (data) {
         const utterance = new SpeechSynthesisUtterance(data);
@@ -288,15 +291,45 @@ const VoiceAssistantModal = ({ isOpen, onClose, isListen }) => {
   };
 
   const toggleListening = () => {
+    if (!recognitionRef.current) return;
+
     if (isListening) {
-      recognitionRef.current.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.warn("Tried to stop speech recognition, but it wasn't running", e);
+      }
       setIsListening(false);
     } else {
       synthRef.current.cancel();
-      recognitionRef.current.start();
-      setIsListening(true);
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (e) {
+        console.warn("Tried to start speech recognition, but it was already running", e);
+        // force it off if it somehow thinks it was running
+        try { recognitionRef.current.stop(); } catch { }
+        setIsListening(false);
+      }
     }
   };
+
+  // Spacebar toggles listening when the modal is open
+  useEffect(() => {
+    const handleSpaceKey = (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleListening();
+      }
+    };
+
+    if (isOpen) {
+      window.addEventListener('keydown', handleSpaceKey);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleSpaceKey);
+    };
+  }, [isOpen]);
 
   const stopSpeaking = () => {
     synthRef.current.cancel();
@@ -320,9 +353,8 @@ const VoiceAssistantModal = ({ isOpen, onClose, isListen }) => {
           <div className="flex flex-col items-center">
             <button
               onClick={toggleListening}
-              className={`w-16 h-16 rounded-full shadow-lg flex items-center justify-center ${
-                isListening ? 'bg-red-600' : 'bg-purple-600'
-              }`}
+              className={`w-16 h-16 rounded-full shadow-lg flex items-center justify-center ${isListening ? 'bg-red-600' : 'bg-purple-600'
+                }`}
             >
               <Mic className="h-8 w-8 text-white" />
             </button>

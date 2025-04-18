@@ -46,8 +46,13 @@ def start_mouse():
     wScr, hScr = pyautogui.size()
 
     stframe = st.empty()
+    get_route = lambda: query_params.get("routes", [""])
+    intended = "stop"
 
     while True:
+        if get_route() == intended:
+            break
+        
         success, img = cap.read()
 
         if not success:
@@ -159,7 +164,8 @@ def start_mouse():
         cv2.waitKey(1)
 
     cap.release()
-    temp_dir.cleanup()
+    cv2.destroyAllWindows()
+    # temp_dir.cleanup()
 
 def start_keyboard():
     cap.set(3, 1280)  # 3 is for width
@@ -170,7 +176,7 @@ def start_keyboard():
     detector = HandDetector(detectionCon=0.8)  # Higher detectionCon improves accuracy
     keys = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
             ["A", "S", "D", "F", "G", "H", "J", "K", "L", ";"],
-            ["Z", "X", "C", "V", "B", "N", "M", ",", ".", "/"]]
+            ["Z", "X", "C", "V", "B", "N", "M", ",", ".", ""]]
     finalText = ""
 
     keyboard = Controller()
@@ -212,9 +218,14 @@ def start_keyboard():
     buttonList.append(Button([150, 400], "SPACE", [400, 85]))  # Larger width for space bar
     buttonList.append(Button([700, 400], "BACKSPACE", [500, 85]))  # Larger width for backspace
 
+    get_route = lambda: query_params.get("routes", [""])
+    intended = "stop"   
 
     # Boilerplate to run webcam feed
     while True:
+        if get_route() == intended:
+            break
+        
         success, img = cap.read()
 
         if not success:
@@ -301,6 +312,9 @@ def start_keyboard():
             print(finalText)
             break
 
+    cap.release()
+    cv2.destroyAllWindows()
+
 # def stop_keyboard():
 #     st.title("Contact Page")
 #     st.write("This is the Contact Page. Reach out to us!")
@@ -352,7 +366,13 @@ def start_quiz():
     qNo = 0
     qTotal = len(dataAll)
 
+    get_route = lambda: query_params.get("routes", [""])
+    intended = "stop"   # or "start_quiz"
+
     while True:
+        if get_route() == intended:
+            break
+        
         success, img = cap.read()
         img = cv2.flip(img, 1)
         hands, img = detector.findHands(img, flipType=False)
@@ -398,11 +418,14 @@ def start_quiz():
         cv2.imshow("Img", img)
         cv2.waitKey(1)
 
+    cap.release()
+    cv2.destroyAllWindows()
+
 
 def stop():
     cap.release()
-    temp_dir.cleanup()
     cv2.destroyAllWindows()
+    # temp_dir.cleanup()
 
 
 # Simulate routing with a sidebar
@@ -412,7 +435,7 @@ def stop():
 query_params = st.query_params
 print(query_params)
 # print(query_params["routes"])
-route =  query_params.get("routes", ["/"])
+route =  query_params.get("routes", [""])
 print(route)
 
 # Render the selected page
@@ -430,6 +453,8 @@ elif route == "start_quiz":
     start_quiz()
 elif route == "stop_quiz":
     stop()
+else:
+    pass
 
 
 
