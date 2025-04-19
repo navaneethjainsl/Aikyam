@@ -5,8 +5,8 @@ import LandingPage from './components/Page';
 import Sidebar from './components/Sidebar';
 import SignLanguageDetector from './components/signLanguage';
 import Chatbot from './components/Chatbot';
-import Multimedia from './components/media';
-import AccessibilityTools from './components/accessibility';
+// import Multimedia from './components/media';
+import AccessibilityTools from './components/Accessibility';
 import JobsAndSchemes from './components/JobsSchemes';
 import Profile from './components/Profile';
 import SignUp from './components/SignUp';
@@ -104,7 +104,7 @@ export default function App() {
             <Route path="/" element={<LandingPage setSidebar={setSidebar} />} />
             <Route path="/signLanguage" element={<SignLanguageDetector setSidebar={setSidebar} />} />
             <Route path="/chatbot" element={<Chatbot setSidebar={setSidebar} />} />
-            <Route path="/multimedia" element={<Multimedia setSidebar={setSidebar} />} />
+            {/* <Route path="/multimedia" element={<Multimedia setSidebar={setSidebar} />} /> */}
             <Route path="/accessibilityTools" element={<AccessibilityTools setSidebar={setSidebar} />} />
             <Route path="/jobsAndSchemes" element={<JobsAndSchemes setSidebar={setSidebar} />} />
             <Route path="/profile" element={<Profile setSidebar={setSidebar} />} />
